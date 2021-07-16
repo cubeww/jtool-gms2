@@ -1,0 +1,86 @@
+
+Please read [TGMS_Beta_Notes] for documentation related to the beta.
+The following documents are incomplete or outdated but can still be used to supplement beta notes.
+
+====================
+== Discord Server ==
+====================
+	
+	Come chat!
+	https://discord.gg/CW45d5bAhj
+	
+================
+== Beta Notes ==
+================
+
+	http://stephenloney.com/_/TweenGMS/B200/TweenGMS%20Beta%20Notes.txt
+
+===================
+== Starter Guide ==
+===================
+
+	http://stephenloney.com/_/TweenGMS/B200/TweenGMS%20v2.0%20Starter%20Guide.html
+
+======================
+== Script Reference ==
+======================
+
+	http://stephenloney.com/_/TweenGMS/B200/TweenGMS%20v2.0%20Script%20Reference.html
+	
+=====================
+== Video Tutorials ==
+=====================
+
+	https://www.youtube.com/playlist?list=PLX4uKTcINfBYVRaYyWbev0rj_9XygYtPK
+
+======================
+== Example Projects ==
+======================
+	
+	[Demo Project]
+	http://stephenloney.com/_/TweenGMS/B200/TGMS_Examples_200_B8.yyz
+
+	[Game Project]
+	http://stephenloney.com/_/TweenGMS/B200/TGMS_AlienOdds_200_B8.yyz
+	
+=========================
+== GameMaker Community ==
+=========================
+
+	https://forum.yoyogames.com/index.php?threads/tweengms-tweening-engine.15740/
+	
+=============
+== Twitter ==
+=============
+	
+	[TweenGMS Account]
+	https://twitter.com/TweenGMS
+	
+	[Developer Account]
+	https://twitter.com/8BitWarrior
+	
+
+====================
+== Special Thanks ==
+====================
+
+Matthew Humphries
+	twitter: @mthwgeek
+
+BeveledEdgeCo
+	twitter: @bevelededgeco
+	site: http://bevelededge.co
+
+TeamSteeve
+	twitter: @teamsteeve
+
+Davide Massara
+	galladhan
+
+Jaime Pascual
+	jaimitoes
+	site: https://www.solostudio.tech/
+	YouTube: https://www.youtube.com/channel/UCGb1IVJFuVrs_pY7NTc6bSQ?
+
+@Tsugumo_BPO (breaker of things)
+

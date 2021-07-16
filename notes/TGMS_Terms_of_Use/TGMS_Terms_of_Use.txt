@@ -1,0 +1,8 @@
+
+[TweenGMS Version 2.0 Beta 8]
+
+This is a beta build and not approved for live production.
+Any damages is at your own risk. You've been warned! ^.^
+
+-No selling of this source code without permission of its owner. (Stephen Loney)
+-No packaging with other assets or software without permission of its owner.
