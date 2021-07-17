@@ -9,7 +9,7 @@ function MessageBox(_rx = 0, _ry = 0, _w = 320, _h = 130, _text = "") : Control(
 	btn_close = add_child(new Button(0, 0, 40, 25, "X", noone, destroy));
 	
 	// methods
-	static on_step = function() {
+	on_step = function() {
 		lbl.rx = w/2;
 		lbl.ry = 32;
 		lbl.valign = fa_top;
@@ -22,7 +22,7 @@ function MessageBox(_rx = 0, _ry = 0, _w = 320, _h = 130, _text = "") : Control(
 		btn_close.ry = 0;
 	}
 	
-	static on_draw = function() {
+	on_draw = function() {
 		// draw black screen
 		draw_set_alpha(alpha * 0.5);
 		draw_set_color(c_black);

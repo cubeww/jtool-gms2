@@ -9,7 +9,7 @@ function Label(_rx = 0, _ry = 0, _text = "", _halign = fa_center, _valign = fa_m
 	color = _color;
 	
 	// methods
-	static on_draw = function() {
+	on_draw = function() {
 		draw_set_alpha(alpha);
 		draw_set_font(font);
 		draw_set_halign(halign);

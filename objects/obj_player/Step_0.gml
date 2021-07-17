@@ -78,7 +78,7 @@ if (keyboard_check_released(vk_shift)) {
 }
 
 // shoot
-if (keyboard_check_pressed(ord("Z")) && !keyboard_check_pressed(vk_control)) {
+if (keyboard_check_pressed(ord("Z")) && !keyboard_check(vk_control)) {
 	if (instance_number(obj_bullet) < 4) {
 	    var b = instance_create_layer(x, y, palette_object_get_layer(obj_bullet), obj_bullet);
 	    b.hspeed = global.player_xscale * 16;

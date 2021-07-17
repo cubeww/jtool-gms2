@@ -2,11 +2,11 @@
   "isDnD": false,
   "isCompatibility": false,
   "parent": {
-    "name": "UI",
-    "path": "folders/Scripts/UI.yy",
+    "name": "controls",
+    "path": "folders/Scripts/UI/JUI/controls.yy",
   },
   "resourceVersion": "1.0",
-  "name": "scr_message_box",
+  "name": "scr_list_box",
   "tags": [],
   "resourceType": "GMScript",
 }

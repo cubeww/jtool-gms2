@@ -43,8 +43,8 @@ var xx = 0; // current x
 var yy = 0; // current y
 
 // file tab
-tab_file = menu.add_child(new CondExpandToggleButton(xo + dx * 0, yo, w, h, 
-	"File", "[ File ]", noone, function() { menu_tab = MENUTAB_FILE; }, 
+tab_file = menu.add_child(new ToggleButton(xo + dx * 0, yo, w, h, 
+	"File", "[ File ]", noone, function() { menu_tab = MENUTAB_FILE; }, true,
 	function() { return menu_tab == MENUTAB_FILE; }));
 
 xx = 0;
@@ -74,8 +74,8 @@ yy += dy;
 btn_exportiwm = tab_file.add_child(new Button(xx, yy, w, h, "Export IWM Map", noone, function() {}));
 
 // map tab
-tab_map = menu.add_child(new CondExpandToggleButton(xo + dx * 1, yo, w, h, 
-	"Map", "[ Map ]", noone, function() { menu_tab = MENUTAB_MAP; }, 
+tab_map = menu.add_child(new ToggleButton(xo + dx * 1, yo, w, h,
+	"Map", "[ Map ]", noone, function() { menu_tab = MENUTAB_MAP; }, true,
 	function() { return menu_tab == MENUTAB_MAP; }));
 
 xx = -dx;
@@ -86,8 +86,8 @@ yy += dy;
 btn_backups = tab_map.add_child(new ToggleButton(xx, yy, w, h, "Backups off", "Backups on", noone, function() {}));
 
 // player tab
-tab_player = menu.add_child(new CondExpandToggleButton(xo + dx * 2, yo, w, h, 
-	"Player", "[ Player ]", noone, function() { menu_tab = MENUTAB_PLAYER; }, 
+tab_player = menu.add_child(new ToggleButton(xo + dx * 2, yo, w, h, 
+	"Player", "[ Player ]", noone, function() { menu_tab = MENUTAB_PLAYER; }, true, 
 	function() { return menu_tab == MENUTAB_PLAYER; }));
 	
 xx = -dx * 2;
@@ -114,13 +114,15 @@ yy += dy;
 btn_hitbox = tab_player.add_child(new ToggleButton(xx, yy, w, h, "Hitbox", "[ Hitbox ]", spr_menu_hitbox, function() {}));
 
 // view tab
-tab_view = menu.add_child(new CondExpandToggleButton(xo + dx * 3, yo, w, h, 
-	"View", "[ View ]", noone, function() { menu_tab = MENUTAB_VIEW; }, 
+tab_view = menu.add_child(new ToggleButton(xo + dx * 3, yo, w, h, 
+	"View", "[ View ]", noone, function() { menu_tab = MENUTAB_VIEW; }, true,
 	function() { return menu_tab == MENUTAB_VIEW; }));
 
 xx = -dx * 3;
 yy = yo2;
-btn_changeskin = tab_view.add_child(new Button(xx, yy, w, h, "Change Skin", spr_menu_skin, function() {}));
+btn_changeskin = tab_view.add_child(new Button(xx, yy, w, h, "Change Skin", spr_menu_skin, function() {
+	obj_popup_window.control.add_control(SkinConfig);
+}));
 
 yy += dy;
 btn_grid = tab_view.add_child(new MultipleToggleButton(xx, yy, w, h, 
@@ -147,15 +149,15 @@ btn_hidesidebar = tab_view.add_child(new ToggleButton(xx, yy, w, h, "Hide Sideba
 }));
 
 // record tab
-tab_record = menu.add_child(new CondExpandToggleButton(xo + dx * 4, yo, w, h, 
-	"Record", "[ Record ]", noone, function() { menu_tab = MENUTAB_RECORD; }, 
+tab_record = menu.add_child(new ToggleButton(xo + dx * 4, yo, w, h, 
+	"Record", "[ Record ]", noone, function() { menu_tab = MENUTAB_RECORD; }, true, 
 	function() { return menu_tab == MENUTAB_RECORD; }));
 
 xx = -dx * 4;
 
 // help tab
-tab_help = menu.add_child(new CondExpandToggleButton(xo + dx * 5, yo, w, h, 
-	"Help", "[ Help ]", noone, function() { menu_tab = MENUTAB_HELP; }, 
+tab_help = menu.add_child(new ToggleButton(xo + dx * 5, yo, w, h, 
+	"Help", "[ Help ]", noone, function() { menu_tab = MENUTAB_HELP; }, true, 
 	function() { return menu_tab == MENUTAB_HELP; }));
 
 xx = -dx * 5;

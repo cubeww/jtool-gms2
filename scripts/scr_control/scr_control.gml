@@ -25,26 +25,26 @@ function Control(_rx = 0, _ry = 0, _w = 32, _h = 32) constructor {
 	disabled = false; // if disabled, on_step() and on_draw() methods are no longer called 
 
 	// methods
-	static add_child = function(ctrl) {
+	add_child = function(ctrl) {
 		ds_list_add(children, ctrl);
 		ctrl.root = self;
 		return ctrl;
 	}
 
-	static add_control = function(control) {
+	add_control = function(control) {
 		var ctrl = new control();
 		add_child(ctrl);
 		return ctrl;
 	}
 
-	static remove_child = function(ctrl) {
+	remove_child = function(ctrl) {
 		ds_list_delete(children, ds_list_find_index(children, ctrl));
 	}
 	
-	static destroy = function() {
+	destroy = function() {
 		root.remove_child(self);
 	}
 	
-	static on_step = function() {}
-	static on_draw = function() {}
+	on_step = pointer_null;
+	on_draw = pointer_null;
 }

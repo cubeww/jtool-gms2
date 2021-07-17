@@ -6,7 +6,7 @@
     "path": "folders/Scripts/UI.yy",
   },
   "resourceVersion": "1.0",
-  "name": "scr_control",
+  "name": "scr_skin_config",
   "tags": [],
   "resourceType": "GMScript",
 }

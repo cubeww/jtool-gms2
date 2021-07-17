@@ -6,7 +6,7 @@
     "path": "folders/Scripts/UI.yy",
   },
   "resourceVersion": "1.0",
-  "name": "scr_message_box",
+  "name": "scr_palette_item",
   "tags": [],
   "resourceType": "GMScript",
 }

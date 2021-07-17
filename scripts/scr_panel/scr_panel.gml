@@ -4,7 +4,7 @@ function Panel(_rx = 0, _ry = 0, _w = 128, _h = 128) : Control(_rx, _ry, _w, _h)
 	border_color = c_black;
 	
 	// methods
-	static on_draw = function() {
+	on_draw = function() {
 		// background color
 		draw_set_color(color);
 		draw_set_alpha(alpha);

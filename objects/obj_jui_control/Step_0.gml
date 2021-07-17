@@ -18,7 +18,8 @@ function update_children(root, rrx, rry, rralpha) {
 		ctrl.alpha = al2;
 		
 		// call update function
-		ctrl.on_step();
+		if (ctrl.on_step != pointer_null)
+			ctrl.on_step();
 		
 		// recursively update child control 
 		update_children(ctrl, rx2, ry2, al2);

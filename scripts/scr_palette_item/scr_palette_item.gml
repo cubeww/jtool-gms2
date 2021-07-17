@@ -1,4 +1,4 @@
-function PaletteItem(_rx, _ry, _w, _h, _spr, _obj, _on_click = function() {}) : Control(_rx, _ry, _w, _h) constructor {
+function PaletteItem(_rx, _ry, _w, _h, _spr, _obj, _on_click = pointer_null) : Control(_rx, _ry, _w, _h) constructor {
 	spr = _spr;
 	obj = _obj;
 	
@@ -14,7 +14,7 @@ function PaletteItem(_rx, _ry, _w, _h, _spr, _obj, _on_click = function() {}) : 
 	on_click = _on_click;
 	
 	// methods
-	static on_step = function() {
+	on_step = function() {
 		if (point_in_rectangle(mouse_x, mouse_y, x, y, x + w, y + h)) {
 			enter = true;
 			if (mouse_check_button_pressed(mb_left)) {
@@ -27,14 +27,15 @@ function PaletteItem(_rx, _ry, _w, _h, _spr, _obj, _on_click = function() {}) : 
 				// create flash effect
 				TweenFire(self, EaseInOutQuad, TWEEN_MODE_ONCE, false, 0, room_speed/5, "flash_alpha", 0.5, 0);
 				
-				on_click();
+				if (on_click != pointer_null)
+					on_click();
 			}
 		} else {
 			enter = false;
 		}
 	}
 	
-	static on_draw = function() {
+	on_draw = function() {
 		draw_set_alpha(alpha);
 		
 		// background color

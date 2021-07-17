@@ -7,8 +7,8 @@ selected_object = obj_block;
 selected_sprite = spr_edit_block;
 
 caught_object = noone;
-caught_old_x = NaN;
-caught_old_y = NaN;
+caught_old_x = pointer_null;
+caught_old_y = pointer_null;
 
 left_pressed = false;
 left_released = false;
@@ -40,7 +40,7 @@ function UndoEvent(_type) constructor {
 	type = _type;
 	sub_events = ds_list_create();
 	
-	static add_sub_event = function(event) {
+	add_sub_event = function(event) {
 		ds_list_add(sub_events, event);
 	}
 }

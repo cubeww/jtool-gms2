@@ -73,18 +73,19 @@ if (global.state == GLOBALSTATE_IDLE) {
 		xsnapped = floor(mouse_x / snap) * snap;
 		ysnapped = floor(mouse_y / snap) * snap;
 		
-		window_set_cursor(cr_none);
 		if (drag_held) {
 			// drag object
+			window_set_cursor(cr_none);
 			cursor_sprite = spr_cursor_open_hand;
 			
 			if (left_held) {
+				window_set_cursor(cr_none);
 				cursor_sprite = spr_cursor_closed_hand;
 				// catch object
 				if (caught_object == noone) {
 					with (all) {
 						if (object_in_palette(object_index)) {
-							var col = collision_point(mouse_x, mouse_y, object_index, true, true);
+							var col = collision_point(mouse_x, mouse_y, object_index, true, false);
 							if (col != noone) {
 								other.caught_object = col;
 								other.caught_old_x = col.x;
@@ -104,6 +105,7 @@ if (global.state == GLOBALSTATE_IDLE) {
 			}
 		} else if (picker_held) {
 			// pick up object
+			window_set_cursor(cr_none);
 			cursor_sprite = spr_cursor_dropper;
 			if (left_pressed) {
 				var col = ds_list_create();
@@ -119,6 +121,7 @@ if (global.state == GLOBALSTATE_IDLE) {
 			}
 		} else if (code_held) {
 			// edit object code
+			window_set_cursor(cr_none);
 			cursor_sprite = spr_cursor_coder;
 		} else {
 			window_set_cursor(cr_arrow);
@@ -135,8 +138,8 @@ if (global.state == GLOBALSTATE_IDLE) {
 					var dy = lengthdir_y(len, dir);
 					var xx = mouse_x_last;
 					var yy = mouse_y_last;
-					var xxn_last = noone;
-					var yyn_last = noone;
+					var xxn_last = pointer_null;
+					var yyn_last = pointer_null;
 					for (var i = 0; i < n; i++) {
 						var xxn = floor(xx / snap) * snap;
 						var yyn = floor(yy / snap) * snap;
