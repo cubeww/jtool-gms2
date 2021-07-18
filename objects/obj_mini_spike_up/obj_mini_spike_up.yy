@@ -1,10 +1,19 @@
 {
-  "spriteId": null,
+  "spriteId": {
+    "name": "spr_mini_spike_up",
+    "path": "sprites/spr_mini_spike_up/spr_mini_spike_up.yy",
+  },
   "solid": false,
   "visible": true,
-  "spriteMaskId": null,
+  "spriteMaskId": {
+    "name": "spr_mini_spike_up_default",
+    "path": "sprites/spr_mini_spike_up_default/spr_mini_spike_up_default.yy",
+  },
   "persistent": false,
-  "parentObjectId": null,
+  "parentObjectId": {
+    "name": "obj_spike_up",
+    "path": "objects/obj_spike_up/obj_spike_up.yy",
+  },
   "physicsObject": false,
   "physicsSensor": false,
   "physicsShape": 1,

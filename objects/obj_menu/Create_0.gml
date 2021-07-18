@@ -15,7 +15,6 @@ menu_tab = MENUTAB_FILE;
 menu_height = 220;
 menu_hide_y = -menu_height - 2;
 menu = control.add_child(new Panel(0, menu_hide_y, 1056, menu_height));
-menu.color = make_color_rgb(220, 221, 221);
 
 // menu methods
 show_menu = function() {
@@ -83,7 +82,12 @@ yy = yo2;
 btn_clearmap = tab_map.add_child(new Button(xx, yy, w, h, "New Map (F2)", spr_menu_clear_map, function() {}));
 
 yy += dy;
-btn_backups = tab_map.add_child(new ToggleButton(xx, yy, w, h, "Backups off", "Backups on", noone, function() {}));
+btn_backups = tab_map.add_child(new ToggleButton(xx, yy, w, h, "Backups off", "Backups on", noone, function() {
+	global.config.backup = !global.config.backup;
+	global.config.save();
+}, false, function() {
+	return global.config.backup;
+}));
 
 // player tab
 tab_player = menu.add_child(new ToggleButton(xo + dx * 2, yo, w, h, 
@@ -92,26 +96,60 @@ tab_player = menu.add_child(new ToggleButton(xo + dx * 2, yo, w, h,
 	
 xx = -dx * 2;
 yy = yo2;
-btn_dotkid = tab_player.add_child(new ToggleButton(xx, yy, w, h, "Dotkid", "[ Dotkid ]", spr_menu_dotkid, function() {}));
+btn_dotkid = tab_player.add_child(new ToggleButton(xx, yy, w, h, "Dotkid", "[ Dotkid ]", spr_menu_dotkid, function() {
+	global.dotkid = !global.dotkid;
+}, false, function() {
+	return global.dotkid;
+}));
 
 yy += dy;
-btn_savetype = tab_player.add_child(new ToggleButton(xx, yy, w, h, "Z Saves", "Shoot Save", spr_menu_save_point, function() {}));
+btn_savetype = tab_player.add_child(new ToggleButton(xx, yy, w, h, "Z Saves", "Shoot Save", spr_menu_save_point, function() {
+	global.save_type = !global.save_type;
+}, false, function() {
+	return global.save_type;
+}));
 
 yy += dy;
-btn_infjump = tab_player.add_child(new ToggleButton(xx, yy, w, h, "Inf Jump", "[ Inf Jump ]", spr_menu_inf_jump, function() {}));
+btn_infjump = tab_player.add_child(new ToggleButton(xx, yy, w, h, "Inf Jump", "[ Inf Jump ]", spr_menu_inf_jump, function() {
+	global.infjump = !global.infjump;
+}, false, function() {
+	return global.infjump;
+}));
 
 yy += dy;
-btn_deathborder = tab_player.add_child(new ToggleButton(xx, yy, w, h, "Death Border", "[ Dotkid ]", spr_menu_border_type, function() {}));
+btn_deathborder = tab_player.add_child(new ToggleButton(xx, yy, w, h, "Death Border", "Solid Border", spr_menu_border_type, function() {
+	global.border_type = !global.border_type;
+}, false, function() {
+	return global.border_type;
+}));
 
 xx += dx;
 yy = yo2;
-btn_dotoutline = tab_player.add_child(new ToggleButton(xx, yy, w, h, "Dot Outline", "[ Dot Outline ]", spr_menu_dot_outline, function() {}));
+btn_dotoutline = tab_player.add_child(new ToggleButton(xx, yy, w, h, "Dot Outline", "[ Dot Outline ]", spr_menu_dot_outline, function() {
+	global.config.dotkid_outline = !global.config.dotkid_outline;
+	global.config.save();
+}, false, function() {
+	return global.config.dotkid_outline;
+}));
 
 yy += dy;
-btn_death = tab_player.add_child(new ToggleButton(xx, yy, w, h, "Death", "[ Death ]", spr_menu_death, function() {}));
+btn_death = tab_player.add_child(new ToggleButton(xx, yy, w, h, "Death", "[ Death ]", spr_menu_death, function() {
+	global.config.death_enable = !global.config.death_enable;
+	global.config.save();
+}, false, function() {
+	return global.config.death_enable;
+}));
 
 yy += dy;
-btn_hitbox = tab_player.add_child(new ToggleButton(xx, yy, w, h, "Hitbox", "[ Hitbox ]", spr_menu_hitbox, function() {}));
+btn_hitbox = tab_player.add_child(new ToggleButton(xx, yy, w, h, "Hitbox", "[ Hitbox ]", spr_menu_hitbox, function() {
+	global.config.show_hitbox++;
+	if (global.config.show_hitbox > 2) {
+		global.config.show_hitbox = 0;
+	}
+	global.config.save();
+}, false, function() {
+	return global.config.show_hitbox >= 1;
+}));
 
 // view tab
 tab_view = menu.add_child(new ToggleButton(xo + dx * 3, yo, w, h, 
@@ -129,7 +167,12 @@ btn_grid = tab_view.add_child(new MultipleToggleButton(xx, yy, w, h,
 	["Grid: off", "Grid: 32", "Grid: 16", "Grid: 8", "Grid: 4"], spr_menu_grid, function() {}, 0, 4));
 
 yy += dy;
-btn_coordinates = tab_view.add_child(new ToggleButton(xx, yy, w, h, "Coordinates", "[ Coordinates ]", spr_menu_coords, function() {}));
+btn_coordinates = tab_view.add_child(new ToggleButton(xx, yy, w, h, "Coordinates", "[ Coordinates ]", spr_menu_coords, function() {
+	global.config.mouse_coords = !global.config.mouse_coords;
+	global.config.save();
+}, false, function() {
+	return global.config.mouse_coords;
+}));
 
 yy += dy;
 btn_depthorder = tab_view.add_child(new Button(xx, yy, w, h, "Depth Order", spr_menu_depth, function() {}));
@@ -138,14 +181,25 @@ xx += dx;
 yy = yo2;
 btn_lockwater = tab_view.add_child(new ToggleButton(xx, yy, w, h, "Lock Water", "[ Lock Water ]", spr_menu_water_lock, function() {
 	btn_lockwater.icon = btn_lockwater.active ? spr_menu_water_lock : spr_menu_water_lock2;
+	global.water_lock = !global.water_lock;
+}, false, function() {
+	return global.water_lock;
 }));
 
 yy += dy;
-btn_fullscreen = tab_view.add_child(new Button(xx, yy, w, h, "Fullscreen", spr_menu_fullscreen, function() {}));
+btn_fullscreen = tab_view.add_child(new Button(xx, yy, w, h, "Fullscreen", spr_menu_fullscreen, function() {
+	window_set_fullscreen(!window_get_fullscreen());
+	global.config.save();
+}, false, function() {
+	return window_get_fullscreen();
+}));
 
 yy += dy;
 btn_hidesidebar = tab_view.add_child(new ToggleButton(xx, yy, w, h, "Hide Sidebar", "Show Sidebar", spr_menu_sidebar, function() {
-	btn_hidesidebar.icon = btn_hidesidebar.active ? spr_menu_sidebar2 : spr_menu_sidebar;
+	global.config.hide_sidebar = !global.config.hide_sidebar;
+	btn_hidesidebar.icon = global.config.hide_sidebar ? spr_menu_sidebar2 : spr_menu_sidebar;
+}, false, function() {
+	return global.config.hide_sidebar;
 }));
 
 // record tab

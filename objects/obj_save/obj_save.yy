@@ -5,7 +5,10 @@
   },
   "solid": false,
   "visible": true,
-  "spriteMaskId": null,
+  "spriteMaskId": {
+    "name": "spr_save_default",
+    "path": "sprites/spr_save_default/spr_save_default.yy",
+  },
   "persistent": false,
   "parentObjectId": null,
   "physicsObject": false,

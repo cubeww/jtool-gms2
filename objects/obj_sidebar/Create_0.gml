@@ -6,16 +6,13 @@ event_inherited();
 sidebar = control.add_control(Control);
 	
 // define instructions
-btn_instr = sidebar.add_child(new ToggleButton(8, 8, 96, 32, "Instructions", "Hide", noone, function() {
-	if (btn_instr.active)
-		TweenFire(instr, EaseOutExpo, TWEEN_MODE_ONCE, false, 0, room_speed, "ralpha", instr.ralpha, 1);
-	else
-		TweenFire(instr, EaseOutExpo, TWEEN_MODE_ONCE, false, 0, room_speed, "ralpha", instr.ralpha, 0);
+btn_instr = sidebar.add_child(new ToggleButton(8, 8, 96, 32, "Instructions", "Hide", noone, function() {	
+	global.config.editor_instructions = !global.config.editor_instructions;
+}, true, function() {
+	return global.config.editor_instructions;
 }));
 
 instr = btn_instr.add_child(new Panel(-256, -8, 248, 275));
-instr.color = make_color_rgb(220, 221, 221);
-instr.ralpha = 0;
 
 cury = 12;
 var instr_add_label = function(key, hint) {

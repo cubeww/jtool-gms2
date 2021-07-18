@@ -5,7 +5,10 @@
   },
   "solid": false,
   "visible": true,
-  "spriteMaskId": null,
+  "spriteMaskId": {
+    "name": "spr_edit_block_default",
+    "path": "sprites/spr_edit_block_default/spr_edit_block_default.yy",
+  },
   "persistent": false,
   "parentObjectId": null,
   "physicsObject": false,

@@ -82,3 +82,22 @@ function palette_object_get_layer(_obj_index) {
 	}
 	return noone;
 }
+
+function is_color_killer(_obj_index) {
+	switch (_obj_index) {
+		case obj_spike_up:
+		case obj_spike_down:
+		case obj_spike_left:
+		case obj_spike_right:
+		
+		case obj_mini_spike_up:
+		case obj_mini_spike_down:
+		case obj_mini_spike_left:
+		case obj_mini_spike_right:
+		
+		case obj_apple:
+			return true;
+		default:
+			return false;
+	}
+}

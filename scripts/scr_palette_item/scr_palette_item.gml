@@ -4,14 +4,9 @@ function PaletteItem(_rx, _ry, _w, _h, _spr, _obj, _on_click = pointer_null) : C
 	
 	border = true;
 	border_color = c_black;
-
-	leave_color = make_color_rgb(175, 175, 175);
-	enter_color = make_color_rgb(215, 215, 215);
-	
-	flash_alpha = 0;
-	flash_color = c_black;
 	
 	on_click = _on_click;
+	flash_alpha = 0;
 	
 	// methods
 	on_step = function() {
@@ -25,7 +20,7 @@ function PaletteItem(_rx, _ry, _w, _h, _spr, _obj, _on_click = pointer_null) : C
 				}
 				
 				// create flash effect
-				TweenFire(self, EaseInOutQuad, TWEEN_MODE_ONCE, false, 0, room_speed/5, "flash_alpha", 0.5, 0);
+				TweenFire(self, EaseInOutQuad, TWEEN_MODE_ONCE, false, 0, room_speed/5, "flash_alpha", 1, 0);
 				
 				if (on_click != pointer_null)
 					on_click();
@@ -39,28 +34,33 @@ function PaletteItem(_rx, _ry, _w, _h, _spr, _obj, _on_click = pointer_null) : C
 		draw_set_alpha(alpha);
 		
 		// background color
-		if (!enter) {
-			draw_set_color(leave_color);
-			draw_rectangle(x, y, x + w, y + h, 0);
-		} else {
-			draw_set_color(enter_color);
-			draw_rectangle(x, y, x + w, y + h, 0);
+		draw_set_color(global.current_skin.button_idle_color);
+		draw_rectangle(x, y, x + w - 1, y + h - 1, 0);
+		if (enter) {
+			draw_set_alpha(alpha * global.current_skin.button_active_alpha);
+			draw_set_color(global.current_skin.button_active_color);
+			draw_rectangle(x, y, x + w - 1, y + h - 1, 0);
 		}
 		
 		// sprite
-		draw_sprite(spr, 0, x + sprite_get_xoffset(spr) + w/2 - sprite_get_width(spr)/2, 
-							y + sprite_get_yoffset(spr) + h/2 - sprite_get_height(spr)/2);
+		var blend = c_white;
+		if (is_color_killer(obj)) {
+			blend = global.current_skin.killer_idle_color;
+		}
+		draw_sprite_ext(spr, 0, x + sprite_get_xoffset(spr) + w/2 - sprite_get_width(spr)/2, 
+								y + sprite_get_yoffset(spr) + h/2 - sprite_get_height(spr)/2,
+								1, 1, 0, blend, 1);
 		
 		// flash effect
-		draw_set_alpha(alpha * flash_alpha);
-		draw_set_color(flash_color);
-		draw_rectangle(x, y, x+w, y+h, 0);
+		draw_set_alpha(alpha * global.current_skin.button_palette_pressed_alpha * flash_alpha);
+		draw_set_color(global.current_skin.button_palette_pressed_color);
+		draw_rectangle(x, y, x + w - 1, y + h - 1, 0);
 
 		// border
 		draw_set_alpha(alpha);
 		if (border) {
 			draw_set_color(border_color);
-			draw_rectangle(x, y, x + w, y + h, 1);
+			draw_rectangle(x, y, x + w - 1, y + h - 1, 1);
 		}
 	}
 }

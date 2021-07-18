@@ -1,7 +1,7 @@
 {
   "spriteId": {
-    "name": "spr_warp",
-    "path": "sprites/spr_warp/spr_warp.yy",
+    "name": "spr_warp_default",
+    "path": "sprites/spr_warp_default/spr_warp_default.yy",
   },
   "solid": false,
   "visible": true,

@@ -5,7 +5,10 @@
   },
   "solid": false,
   "visible": true,
-  "spriteMaskId": null,
+  "spriteMaskId": {
+    "name": "spr_mini_killer_block_default",
+    "path": "sprites/spr_mini_killer_block_default/spr_mini_killer_block_default.yy",
+  },
   "persistent": false,
   "parentObjectId": null,
   "physicsObject": false,

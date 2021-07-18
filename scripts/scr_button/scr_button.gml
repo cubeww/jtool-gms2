@@ -6,9 +6,6 @@ function Button(_rx = 0, _ry = 0, _w = 130, _h = 32, _text = "", _icon = noone, 
 	border = true;
 	border_color = c_black;
 
-	leave_color = make_color_rgb(175, 175, 175);
-	enter_color = make_color_rgb(215, 215, 215);
-
 	text = _text;
 	text_color = c_black;
 	text_font = font_small;
@@ -22,7 +19,7 @@ function Button(_rx = 0, _ry = 0, _w = 130, _h = 32, _text = "", _icon = noone, 
 	
 	// methods
 	on_step = function() {
-		if (point_in_rectangle(mouse_x, mouse_y, x, y, x + w, y + h)) {
+		if (point_in_rectangle(mouse_x, mouse_y, x, y, x + w - 1, y + h - 1)) {
 			enter = true;
 			if (mouse_check_button_pressed(mb_left)) {
 				if (on_click != pointer_null)
@@ -34,18 +31,18 @@ function Button(_rx = 0, _ry = 0, _w = 130, _h = 32, _text = "", _icon = noone, 
 	}
 	
 	on_draw = function() {
-		draw_set_alpha(alpha);
-		
 		// background color
-		if (!enter) {
-			draw_set_color(leave_color);
-			draw_rectangle(x, y, x + w, y + h, 0);
-		} else {
-			draw_set_color(enter_color);
-			draw_rectangle(x, y, x + w, y + h, 0);
+		draw_set_alpha(alpha);
+		draw_set_color(global.current_skin.button_idle_color);
+		draw_rectangle(x, y, x + w - 1, y + h - 1, 0);
+		if (enter) {
+			draw_set_alpha(alpha * global.current_skin.button_active_alpha);
+			draw_set_color(global.current_skin.button_active_color);
+			draw_rectangle(x, y, x + w - 1, y + h - 1, 0);
 		}
 		
 		// text
+		draw_set_alpha(alpha);
 		draw_set_font(text_font);
 		draw_set_color(text_color);
 		draw_set_halign(fa_center);
@@ -61,7 +58,7 @@ function Button(_rx = 0, _ry = 0, _w = 130, _h = 32, _text = "", _icon = noone, 
 		// border
 		if (border) {
 			draw_set_color(border_color);
-			draw_rectangle(x, y, x + w, y + h, 1);
+			draw_rectangle(x, y, x + w - 1, y + h - 1, 1);
 		}
 	}
 }
@@ -80,7 +77,7 @@ function ToggleButton(_rx = 0, _ry = 0, _w = 130, _h = 32, _inactive_text = "", 
 	on_step = function() {
 		text = active ? active_text : inactive_text;
 		
-		if (point_in_rectangle(mouse_x, mouse_y, x, y, x + w, y + h)) {
+		if (point_in_rectangle(mouse_x, mouse_y, x, y, x + w - 1, y + h - 1)) {
 			enter = true;
 			if (mouse_check_button_pressed(mb_left)) {
 				active = !active;
@@ -115,7 +112,7 @@ function MultipleToggleButton(_rx = 0, _ry = 0, _w = 130, _h = 32, _texts = [], 
 	on_step = function() {
 		text = texts[num];
 		
-		if (point_in_rectangle(mouse_x, mouse_y, x, y, x + w, y + h)) {
+		if (point_in_rectangle(mouse_x, mouse_y, x, y, x + w - 1, y + h - 1)) {
 			enter = true;
 			if (mouse_check_button_pressed(mb_left)) {
 				num++;

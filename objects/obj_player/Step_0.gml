@@ -1,4 +1,13 @@
 /// @description Classic kid physics  
+
+// dotkid
+if (global.dotkid && mask_index != spr_dotkid) {
+    mask_index = spr_dotkid;
+} else if (!global.dotkid && mask_index == spr_dotkid) {
+    mask_index = spr_player_mask;
+}
+
+
 // set x / y previous
 xprev = x;
 yprev = y;
@@ -45,25 +54,31 @@ if (abs(vsp) > max_vsp) {
 }
 
 // water
-if (place_meeting(x, y, obj_water)) {
-    vsp = min(abs(vsp), 2) * global.player_grav;
+var water = place_meeting(x, y, obj_water);
+var water2 = place_meeting(x, y, obj_water2);
+var water3 = place_meeting(x, y, obj_water3);
+if (water || water2 || water3) {
+    vsp = min(vsp * global.player_grav, 2) * global.player_grav;
     
-    if (place_meeting(x, y, obj_water2)) { 
+    if (!water2) { 
         djump = true;
     } 
 }
 
 // jump
 if (keyboard_check_pressed(vk_shift)) {
-    if (place_meeting(x, y + 1 * global.player_grav, obj_block) || place_meeting(x, y + 1 * global.player_grav, obj_platform) || on_platform) {
+    if (place_meeting(x, y + 1 * global.player_grav, obj_block) || 
+			place_meeting(x, y + 1 * global.player_grav, obj_platform) || 
+			on_platform ||
+			water) {
         audio_play_sound(snd_jump, 0, 0);
 		vsp = -jump * global.player_grav;
         djump = true;
-    } else if (djump || place_meeting(x, y, obj_water)) {
+    } else if (djump || water2) {
 		audio_play_sound(snd_djump, 0, 0);
 		sprite_index = spr_player_jump;
         vsp = -jump2 * global.player_grav;
-        if (!place_meeting(x, y, obj_water2)) { 
+        if (!place_meeting(x, y, obj_water3)) { 
 			djump = false; 
 		} else { 
 			djump = true; 
@@ -223,11 +238,19 @@ if (save != noone) {
 			save.alarm[1] = 59;
 			save.can_save = false;
 			
-			global.save_player_x = x;
-			global.save_player_y = y;
-			global.save_player_grav = global.player_grav;
-			global.save_player_xscale = global.player_xscale;
+			global.current_save.save();
 		}
+	}
+}
+
+// jump refresher
+var jmp = instance_place(x, y, obj_jump_refresher);
+if (jmp != noone) {
+	if (jmp.can_refresh) {
+		jmp.can_refresh = false;
+		jmp.image_alpha = 0.1;
+		jmp.alarm[0] = 100;
+		djump = true;
 	}
 }
 
@@ -236,7 +259,7 @@ var k = instance_place(x, y, obj_player_killer);
 if (k != noone) {
 	audio_play_sound(snd_death, 0, 0);
 	with (k) {
-		TweenEasyBlend(make_color_rgb(255, 105, 105), c_white, 0, 50, EaseOutExpo);
+		TweenEasyBlend(global.current_skin.killer_active_color, global.current_skin.killer_idle_color, 0, 50, EaseOutExpo);
 	}
 	
 	repeat (200)

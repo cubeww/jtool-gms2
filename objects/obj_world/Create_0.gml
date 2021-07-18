@@ -1,1 +1,1 @@
-game_initialize();
+main_initialize();

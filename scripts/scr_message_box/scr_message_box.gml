@@ -30,12 +30,12 @@ function MessageBox(_rx = 0, _ry = 0, _w = 320, _h = 130, _text = "") : Control(
 		
 		// draw background
 		draw_set_alpha(alpha);
-		draw_set_color(make_color_rgb(226, 226, 226));
-		draw_rectangle(x, y, x+w, y+h, 0);
+		draw_set_color(global.current_skin.button_idle_color);
+		draw_rectangle(x, y, x+w-1, y+h-1, 0);
 		
 		// draw border
 		draw_set_alpha(alpha);
 		draw_set_color(c_black);
-		draw_rectangle(x, y, x+w, y+h, 1);
+		draw_rectangle(x, y, x+w-1, y+h-1, 1);
 	}
 }

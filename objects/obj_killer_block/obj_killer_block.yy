@@ -5,7 +5,10 @@
   },
   "solid": false,
   "visible": true,
-  "spriteMaskId": null,
+  "spriteMaskId": {
+    "name": "spr_killer_block_default",
+    "path": "sprites/spr_killer_block_default/spr_killer_block_default.yy",
+  },
   "persistent": false,
   "parentObjectId": {
     "name": "obj_player_killer",

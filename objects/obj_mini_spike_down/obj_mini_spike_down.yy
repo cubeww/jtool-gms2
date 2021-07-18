@@ -5,11 +5,14 @@
   },
   "solid": false,
   "visible": true,
-  "spriteMaskId": null,
+  "spriteMaskId": {
+    "name": "spr_mini_spike_down_default",
+    "path": "sprites/spr_mini_spike_down_default/spr_mini_spike_down_default.yy",
+  },
   "persistent": false,
   "parentObjectId": {
-    "name": "obj_player_killer",
-    "path": "objects/obj_player_killer/obj_player_killer.yy",
+    "name": "obj_spike_up",
+    "path": "objects/obj_spike_up/obj_spike_up.yy",
   },
   "physicsObject": false,
   "physicsSensor": false,

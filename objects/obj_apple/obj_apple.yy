@@ -5,7 +5,10 @@
   },
   "solid": false,
   "visible": true,
-  "spriteMaskId": null,
+  "spriteMaskId": {
+    "name": "spr_apple_default",
+    "path": "sprites/spr_apple_default/spr_apple_default.yy",
+  },
   "persistent": false,
   "parentObjectId": {
     "name": "obj_player_killer",

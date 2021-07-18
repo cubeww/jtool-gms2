@@ -80,7 +80,6 @@ control.add_child(new PaletteItem(xx, yy, w, h, spr_ellipsis, noone, function() 
 // more objects
 yy += dy - 8;
 moreobjs = control.add_child(new Panel(-8, yy, 240, 124));
-moreobjs.color = make_color_rgb(215, 215, 215);
 moreobjs.disabled = true;
 
 xx = 8;

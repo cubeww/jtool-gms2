@@ -5,19 +5,33 @@
 #macro SAVETYPE_Z 0
 #macro SAVETYPE_SHOOT 1
 
-function game_initialize() {
+#macro BG_TYPE_TILE 0
+#macro BG_TYPE_STRETCH 1
+
+#macro BORDER_DEATH 0
+#macro BORDER_SOLID 1
+
+function main_initialize() {
+	global.project_directory = @"D:\Projects\GMS2\jtool\bin";
+	
 	window_set_caption("jtool-gms2");
 	room_speed = 50;
 	
 	global.state = GLOBALSTATE_IDLE;
-	global.death_enable = true;
 	global.save_type = SAVETYPE_Z;
+	global.water_lock = false;
 	
 	global.player_xscale = 1;
 	global.player_grav = 1;
+	global.dotkid = false;
+	global.infjump = false;
+	global.border_type = BORDER_DEATH;
 	
-	global.save_player_x = noone;
-	global.save_player_y = noone;
-	global.save_player_grav = 1;
-	global.save_player_xscale = 1;
+	global.current_save = new Save();
+	
+	global.default_skin = new Skin();
+	global.current_skin = global.default_skin;
+	
+	global.config = new Config();
+	global.config.load();
 }

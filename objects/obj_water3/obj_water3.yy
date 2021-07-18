@@ -1,11 +1,14 @@
 {
   "spriteId": {
-    "name": "spr_water2",
-    "path": "sprites/spr_water2/spr_water2.yy",
+    "name": "spr_water3",
+    "path": "sprites/spr_water3/spr_water3.yy",
   },
   "solid": false,
   "visible": true,
-  "spriteMaskId": null,
+  "spriteMaskId": {
+    "name": "spr_water3_default",
+    "path": "sprites/spr_water3_default/spr_water3_default.yy",
+  },
   "persistent": false,
   "parentObjectId": null,
   "physicsObject": false,

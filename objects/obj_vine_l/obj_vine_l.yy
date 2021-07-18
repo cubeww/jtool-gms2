@@ -5,7 +5,10 @@
   },
   "solid": false,
   "visible": true,
-  "spriteMaskId": null,
+  "spriteMaskId": {
+    "name": "spr_walljump_r_default",
+    "path": "sprites/spr_walljump_r_default/spr_walljump_r_default.yy",
+  },
   "persistent": false,
   "parentObjectId": null,
   "physicsObject": false,

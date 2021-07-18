@@ -1,2 +1,2 @@
 instance_destroy(other);
-TweenEasyFade(1, 0.3, 0, 50, EaseOutExpo);
+TweenEasyFade(1, global.bulletblocker_alpha, 0, 50, EaseOutExpo);
