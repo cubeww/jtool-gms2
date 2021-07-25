@@ -87,6 +87,7 @@ function SkinConfig(_rx = 0, _ry = 0, _w = 400, _h = 225) : Control(_rx, _ry, _w
 	
 	apply_skin = function() {
 		skin.apply();
+		global.config.save();
 		if (skin != global.default_skin) {
 			skin.destroy();
 		}

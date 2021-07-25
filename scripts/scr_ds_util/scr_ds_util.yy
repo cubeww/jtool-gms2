@@ -2,11 +2,11 @@
   "isDnD": false,
   "isCompatibility": false,
   "parent": {
-    "name": "TweenGMS 2 Beta",
-    "path": "folders/Scripts/3rdparty/TweenGMS 2 Beta.yy",
+    "name": "util",
+    "path": "folders/Scripts/util.yy",
   },
   "resourceVersion": "1.0",
-  "name": "TGMS_9_Settings",
+  "name": "scr_ds_util",
   "tags": [],
   "resourceType": "GMScript",
 }

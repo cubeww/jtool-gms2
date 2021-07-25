@@ -34,3 +34,9 @@ function ds_list_log(list) {
 	return str + "]"
 
 }
+
+function ds_list_swap(list, pos1, pos2) {
+	var m = list[| pos1];
+	list[| pos1] = list[| pos2];
+	list[| pos2] = m;
+}

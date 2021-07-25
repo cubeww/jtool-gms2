@@ -1,7 +1,7 @@
 {
   "parent": {
     "name": "Docs (Incomplete)",
-    "path": "folders/Scripts/TweenGMS 2 Beta/Docs (Incomplete).yy",
+    "path": "folders/Scripts/3rdparty/TweenGMS 2 Beta/Docs (Incomplete).yy",
   },
   "resourceVersion": "1.1",
   "name": "TGMS_Documentation",

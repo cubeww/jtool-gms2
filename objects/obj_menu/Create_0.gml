@@ -20,13 +20,13 @@ menu = control.add_child(new Panel(0, menu_hide_y, 1056, menu_height));
 show_menu = function() {
 	if (global.state == GLOBALSTATE_IDLE && menu.ry == menu_hide_y) {
 		global.state = GLOBALSTATE_MENU;
-		TweenFire(menu, EaseOutQuad, TWEEN_MODE_ONCE, false, 0, room_speed / 2, "ry", menu.ry, 0);
+		TweenFire(menu, EaseOutQuad, TWEEN_MODE_ONCE, false, 0, room_speed / 3, "ry", menu.ry, 0);
 	}
 }
 
 close_menu = function() {
 	global.state = GLOBALSTATE_IDLE;
-	TweenFire(menu, EaseOutQuad, TWEEN_MODE_ONCE, false, 0, room_speed / 2, "ry", menu.ry, menu_hide_y);
+	TweenFire(menu, EaseOutQuad, TWEEN_MODE_ONCE, false, 0, room_speed / 3, "ry", menu.ry, menu_hide_y);
 }
 
 // define menu panel ui
@@ -48,25 +48,54 @@ tab_file = menu.add_child(new ToggleButton(xo + dx * 0, yo, w, h,
 
 xx = 0;
 yy = yo2;
-btn_openmap = tab_file.add_child(new Button(xx, yy, w, h, "Open Map", spr_menu_open, function() {}));
+btn_openjmx = tab_file.add_child(new Button(xx, yy, w, h, "Open JMX", spr_menu_open, function() {}));
 
 yy += dy;
-btn_savemap = tab_file.add_child(new Button(xx, yy, w, h, "Save Map", spr_menu_save, function() {}));
+btn_savejmx = tab_file.add_child(new Button(xx, yy, w, h, "Save JMX", spr_menu_save, function() {}));
 
 yy += dy;
-btn_importrmj = tab_file.add_child(new Button(xx, yy, w, h, "Import RMJ Map", noone, function() {}));
+btn_importjmap = tab_file.add_child(new Button(xx, yy, w, h, "Import JMap", noone, function() {
+	var filename = get_open_filename_ext("jtool 1.x map|*.jmap", "", "", "Open Map");
+	if (filename != "") {
+		global.current_map.load_jmap(filename);
+		global.current_map.load_map();
+	}
+}));
 
 yy += dy;
-btn_exportrmj = tab_file.add_child(new Button(xx, yy, w, h, "Export RMJ Map", noone, function() {}));
+btn_exportjmap = tab_file.add_child(new Button(xx, yy, w, h, "Export JMap", noone, function() {
+	global.current_map.save_map();
+	var filename = get_save_filename_ext("jtool 1.x map|*.jmap", "", "", "Save Map");
+	if (filename != "")
+		global.current_map.save_jmap(filename);
+}));
 
 xx += dx;
 yy = yo2;
+btn_importrmj = tab_file.add_child(new Button(xx, yy, w, h, "Import RMJ Map", noone, function() {
+	var filename = get_open_filename_ext("RMJ map|*.map", "", "", "Open RMJ map");
+	if (filename != "") {
+		global.current_map.load_rmj(filename);
+		global.current_map.load_map();
+	}
+}));
+
+yy += dy;
+btn_exportrmj = tab_file.add_child(new Button(xx, yy, w, h, "Export RMJ Map", noone, function() {
+	global.current_map.save_map();
+	var filename = get_save_filename_ext("RMJ map|*.map", "", "", "Save RMJ Map");
+	if (filename != "")
+		global.current_map.save_rmj(filename);
+}));
+
+yy += dy;
 btn_exportgm8 = tab_file.add_child(new Button(xx, yy, w, h, "Export GM8 Map", noone, function() {}));
 
 yy += dy;
 btn_exportgms1 = tab_file.add_child(new Button(xx, yy, w, h, "Export GMS1 Map", noone, function() {}));
 
-yy += dy;
+xx += dx;
+yy = yo2;
 btn_exportgms2 = tab_file.add_child(new Button(xx, yy, w, h, "Export GMS2 Map", noone, function() {}));
 
 yy += dy;

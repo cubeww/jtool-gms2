@@ -2,11 +2,11 @@
   "isDnD": false,
   "isCompatibility": false,
   "parent": {
-    "name": "World",
-    "path": "folders/Scripts/World.yy",
+    "name": "world",
+    "path": "folders/Scripts/world.yy",
   },
   "resourceVersion": "1.0",
-  "name": "scr_initialize",
+  "name": "scr_main_initialize",
   "tags": [],
   "resourceType": "GMScript",
 }

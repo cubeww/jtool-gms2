@@ -30,7 +30,9 @@ function main_initialize() {
 	global.current_save = new Save();
 	
 	global.default_skin = new Skin();
-	global.current_skin = global.default_skin;
+	global.current_skin = new Skin();
+	
+	global.current_map = new Map();
 	
 	global.config = new Config();
 	global.config.load();

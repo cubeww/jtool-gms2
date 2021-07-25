@@ -2,8 +2,8 @@
   "isDnD": false,
   "isCompatibility": false,
   "parent": {
-    "name": "JUI",
-    "path": "folders/Scripts/UI/JUI.yy",
+    "name": "jui",
+    "path": "folders/Scripts/ui/jui.yy",
   },
   "resourceVersion": "1.0",
   "name": "scr_control",
