@@ -96,10 +96,16 @@ btn_exportgm8 = tab_file.add_child(new Button(xx, yy, w, h, "Export GM8 Map", no
 }));
 
 yy += dy;
-btn_exportgms1 = tab_file.add_child(new Button(xx, yy, w, h, "Export GMS1 Map", noone, function() {}));
+btn_exportgms1 = tab_file.add_child(new Button(xx, yy, w, h, "Export GMS1 Map", noone, function() {
+	global.current_map.save_current();
+	global.current_map.save_gms();
+}));
 
 yy += dy;
-btn_exportgms2 = tab_file.add_child(new Button(xx, yy, w, h, "Export GMS2 Map", noone, function() {}));
+btn_exportgms2 = tab_file.add_child(new Button(xx, yy, w, h, "Export GMS2 Map", noone, function() {
+	global.current_map.save_current();
+	global.current_map.save_gms2();
+}));
 
 yy += dy;
 btn_exportiwm = tab_file.add_child(new Button(xx, yy, w, h, "Export IWM Map", noone, function() {}));

@@ -12,6 +12,8 @@
 #macro BORDER_SOLID 1
 
 function main_initialize() {
+	DerpXml_Init();
+	
 	global.project_directory = @"D:\Projects\GMS2\jtool\bin";
 	
 	window_set_caption("jtool-gms2");
