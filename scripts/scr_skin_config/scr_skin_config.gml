@@ -27,7 +27,7 @@ function SkinConfig(_rx = 0, _ry = 0, _w = 400, _h = 225) : Control(_rx, _ry, _w
 	
 	slider = add_child(new SlideBar(list_w - 20, 0, 20, _h, function() {
 		lst_skin_names.start_index = max(0, 
-		floor((ds_list_size(lst_skin_names.list) - lst_skin_names.show_count) * slider.pos));
+		floor((array_length(lst_skin_names.list) - lst_skin_names.show_count) * slider.pos));
 	}));
 
 	last_state = global.state;

@@ -6,7 +6,7 @@
     "path": "folders/Scripts/util.yy",
   },
   "resourceVersion": "1.0",
-  "name": "scr_ds_util",
+  "name": "scr_array_util",
   "tags": [],
   "resourceType": "GMScript",
 }

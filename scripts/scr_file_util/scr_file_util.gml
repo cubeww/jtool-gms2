@@ -14,3 +14,14 @@ function ini_read_color_hsv(section, key, def) {
 		return real(def);
 	}
 }
+
+function file_text_read_string_all(file) {
+	if (file < 0) return undefined;
+	var str = "";
+	while (!file_text_eof(file)) {
+	    str += file_text_read_string(file);
+	    file_text_readln(file);
+	}
+	file_text_close(file);
+	return str;
+}

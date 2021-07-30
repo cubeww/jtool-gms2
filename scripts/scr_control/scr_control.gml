@@ -2,7 +2,7 @@
 function Control(_rx = 0, _ry = 0, _w = 32, _h = 32) constructor {
 	// properties
 	root = noone;
-	children = ds_list_create();
+	children = [];
 	
 	// coordinates relative to the ROOT control 
 	rx = _rx;
@@ -26,7 +26,7 @@ function Control(_rx = 0, _ry = 0, _w = 32, _h = 32) constructor {
 
 	// methods
 	add_child = function(ctrl) {
-		ds_list_add(children, ctrl);
+		array_push(children, ctrl);
 		ctrl.root = self;
 		return ctrl;
 	}
@@ -38,7 +38,7 @@ function Control(_rx = 0, _ry = 0, _w = 32, _h = 32) constructor {
 	}
 
 	remove_child = function(ctrl) {
-		ds_list_delete(children, ds_list_find_index(children, ctrl));
+		array_delete(children, array_get_index(children, ctrl), 1);
 	}
 	
 	destroy = function() {

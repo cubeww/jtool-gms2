@@ -1,8 +1,8 @@
 /// @description Update controls
 
 function update_children(root, rrx, rry, rralpha) {
-	for (var i = 0; i < ds_list_size(root.children); i++) {
-		var ctrl = root.children[| i];
+	for (var i = 0; i < array_length(root.children); i++) {
+		var ctrl = root.children[i];
 		if (ctrl.disabled)
 			continue;
 		

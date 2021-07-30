@@ -6,7 +6,7 @@
     "path": "folders/Scripts/core.yy",
   },
   "resourceVersion": "1.0",
-  "name": "scr_skin",
+  "name": "scr_map_id_converter",
   "tags": [],
   "resourceType": "GMScript",
 }

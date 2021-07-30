@@ -1,5 +1,5 @@
 function ListBox(_rx = 0, _ry = 0, _w = 128, _h = 128, _on_click = pointer_null) : Control(_rx, _ry, _w, _h) constructor {
-	list = ds_list_create();
+	list = [];
 	show_count = 8;
 	select = noone;
 	enter_color = make_color_rgb(229, 243, 255);
@@ -13,16 +13,16 @@ function ListBox(_rx = 0, _ry = 0, _w = 128, _h = 128, _on_click = pointer_null)
 	start_index = 0;
 	
 	add_item = function(item) {
-		ds_list_add(list, item);
+		array_push(list, item);
 	}
 	
 	remove_item = function(pos) {
-		ds_list_delete(list, pos);
+		array_delete(list, pos, 1);
 	}
 	
 	get_select_item = function() {
 		if (select != noone)
-			return list[| select];
+			return list[select];
 		else return noone;
 	}
 	
@@ -30,7 +30,7 @@ function ListBox(_rx = 0, _ry = 0, _w = 128, _h = 128, _on_click = pointer_null)
 		var dy = h / show_count;
 		for (var i = 0; i < show_count; i++) {
 			var index = start_index + i;
-			if (index > ds_list_size(list) - 1) {
+			if (index > array_length(list) - 1) {
 				break;
 			}
 			
@@ -59,7 +59,7 @@ function ListBox(_rx = 0, _ry = 0, _w = 128, _h = 128, _on_click = pointer_null)
 		var dy = h / show_count;
 		for (var i = 0; i < show_count; i++) {
 			var index = start_index + i;
-			if (index > ds_list_size(list) - 1) {
+			if (index > array_length(list) - 1) {
 				break;
 			}
 			
@@ -83,8 +83,8 @@ function ListBox(_rx = 0, _ry = 0, _w = 128, _h = 128, _on_click = pointer_null)
 			draw_set_valign(fa_middle);
 			var x3 = x;
 			var y3 = (y1 + y2) / 2;
-			var str = string_copy(list[| index], 1, max_text_length);
-			if (string_length(list[| index]) > max_text_length)
+			var str = string_copy(list[index], 1, max_text_length);
+			if (string_length(list[index]) > max_text_length)
 				str += "...";
 			draw_text(x3 + text_xoffset, y3, str);
 		}

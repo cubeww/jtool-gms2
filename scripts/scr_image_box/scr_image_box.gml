@@ -9,10 +9,10 @@ function ImageBox(_rx = 0, _ry = 0, _w = 64, _h = 64, _image = noone, _index = 0
 		var xscale = w / sprite_get_width(image);
 		var yscale = h / sprite_get_height(image); 
 		draw_sprite_ext(image, index, 
-			x + sprite_get_xoffset(image) * xscale,
-			y + sprite_get_yoffset(image) * yscale,
-			xscale,
-			yscale,
-			0, c_white, 1);
+				x + sprite_get_xoffset(image) * xscale,
+				y + sprite_get_yoffset(image) * yscale,
+				xscale,
+				yscale,
+				0, c_white, 1);
 	}
 }

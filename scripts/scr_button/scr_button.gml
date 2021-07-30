@@ -93,8 +93,8 @@ function ToggleButton(_rx = 0, _ry = 0, _w = 130, _h = 32, _inactive_text = "", 
 			active = cond();
 			
 		if (hide_children) {
-			for (var i = 0; i < ds_list_size(children); i++) {
-				var ctrl = children[| i];
+			for (var i = 0; i < array_length(children); i++) {
+				var ctrl = children[i];
 				ctrl.disabled = !active;
 			}
 		}

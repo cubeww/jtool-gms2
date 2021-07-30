@@ -8,10 +8,13 @@ function Map() constructor {
 	player_y = 0;
 	player_xscale = 1;
 	player_grav = 1;
-	objects = ds_list_create();
+	objects = [];
 	
-	// save methods
-	save_map = function() {
+	//---------------------------------------------------------------------------
+	// save / load methods
+	//---------------------------------------------------------------------------
+	
+	save_current = function() {
 		// save metadata
 		infjump = global.infjump;
 		dotkid = global.dotkid;
@@ -23,7 +26,7 @@ function Map() constructor {
 		player_grav = global.current_save.grav;
 		
 		// save objects
-		ds_list_clear(objects);
+		array_clear(objects);
 		with (all) {
 			if (!object_in_palette(object_index)) 
 				continue;
@@ -31,20 +34,45 @@ function Map() constructor {
 			var minpos = -128;
 			if (x >= maxpos || y >= maxpos || x < minpos || y < minpos)
 			    continue;
-			ds_list_add(other.objects, new MapObject(x, y, object_index));
+			array_push(other.objects, new MapObject(x, y, object_index));
 		}
 		
 		// sort objects y
-		var len = ds_list_size(objects);
+		var len = array_length(objects);
 		for (var i = 0; i < len; i++) {
 			for (var j = 0; j < len - i - 1; j++) {
-				if (objects[| j].y > objects[| j + 1].y) {
-					ds_list_swap(objects, j, j + 1);
+				if (objects[j].y > objects[j + 1].y) {
+					array_swap(objects, j, j + 1);
 				}
 			}
 		}
 	}
 	
+	apply = function() {
+		// load metadata
+		global.infjump = infjump;
+		global.dotkid = dotkid;
+		global.save_type = save_type;
+		global.border_type = border_type;
+		global.current_save.x = player_x;
+		global.current_save.y = player_y;
+		global.current_save.xscale = player_xscale;
+		global.current_save.grav = player_grav;
+		
+		// load objects
+		with (all) {
+			if (object_in_palette(object_index))
+				instance_destroy();
+		}
+		var len = array_length(objects);
+		for (var i = 0; i < len; i++) {
+			var obj = objects[i];
+			instance_create_layer(obj.x, obj.y, palette_object_get_layer(obj.index), obj.index);
+		}
+		global.current_save.load();
+	}
+		
+	// rmj save / load
 	save_rmj = function(filename) {
 		// header 
 		var f = file_text_open_write(filename);
@@ -56,9 +84,9 @@ function Map() constructor {
 		file_text_writeln(f);
 
 		// objects 
-		var len = ds_list_size(objects);
+		var len = array_length(objects);
 		for (var i = 0; i < len; i++) {
-			var obj = objects[| i];
+			var obj = objects[i];
 		    var rmjcode = index_to_rmj_id(obj.index);
 		    if (rmjcode == -1) {
 		        if (object_in_palette(obj.index))
@@ -68,6 +96,35 @@ function Map() constructor {
 		}
 		file_text_close(f);
 	}
+	load_rmj = function(filename) {
+		var f = file_text_open_read(filename);
+		var firstline = file_text_read_string(f);
+		if (firstline != " 1.030000")
+		{
+		    file_text_close(f);
+		    exit;
+		}
+		file_text_readln(f);
+		file_text_readln(f);
+		file_text_readln(f);
+		array_clear(objects);
+		while (!file_text_eoln(f)) {
+		    var xx = file_text_read_real(f);
+		    var yy = file_text_read_real(f);
+		    var type = file_text_read_real(f);
+		    array_push(objects, new MapObject(xx, yy, rmj_id_to_index(type)));
+		    if (file_text_eoln(f))
+		        break;
+		}
+		file_text_close(f);
+
+		inf_jump = false;
+		dotkid = false;
+		save_type = SAVETYPE_SHOOT;
+		border_type = BORDER_DEATH;
+	}
+		
+	// jtool 1.x map save / load
 	save_jmap = function(filename) {
 		var f = file_text_open_write(filename);
 		var delim = "|";
@@ -96,9 +153,9 @@ function Map() constructor {
 		// write objects
 		file_text_write_string(f, delim);
 		file_text_write_string(f, "objects:");
-		var len = ds_list_size(objects);
+		var len = array_length(objects);
 		for (var i = 0, yy = pointer_null; i < len; i++) {
-			var obj = objects[| i];
+			var obj = objects[i];
 			if (yy != obj.y) {
 				yy = obj.y;
 				file_text_write_string(f, "-" + pad_string_left(int_to_base32_string(obj.y + 128), 2, "0"));
@@ -111,64 +168,6 @@ function Map() constructor {
 		}
 		
 		file_text_close(f);
-	}
-	save_jmx = function(filename) {}
-	
-	save_gm8 = function(filename) {}
-	save_gms = function(filename) {}
-	save_gms2 = function(filename) {}
-	
-	// load methods
-	load_map = function() {
-		// load metadata
-		global.infjump = infjump;
-		global.dotkid = dotkid;
-		global.save_type = save_type;
-		global.border_type = border_type;
-		global.current_save.x = player_x;
-		global.current_save.y = player_y;
-		global.current_save.xscale = player_xscale;
-		global.current_save.grav = player_grav;
-		
-		// load objects
-		with (all) {
-			if (object_in_palette(object_index))
-				instance_destroy();
-		}
-		var len = ds_list_size(objects);
-		for (var i = 0; i < len; i++) {
-			var obj = objects[| i];
-			instance_create_layer(obj.x, obj.y, palette_object_get_layer(obj.index), obj.index);
-		}
-		global.current_save.load();
-	}
-	
-	load_rmj = function(filename) {
-		var f = file_text_open_read(filename);
-		var firstline = file_text_read_string(f);
-		if (firstline != " 1.030000")
-		{
-		    file_text_close(f);
-		    exit;
-		}
-		file_text_readln(f);
-		file_text_readln(f);
-		file_text_readln(f);
-		ds_list_clear(objects);
-		while (!file_text_eoln(f)) {
-		    var xx = file_text_read_real(f);
-		    var yy = file_text_read_real(f);
-		    var type = file_text_read_real(f);
-		    ds_list_add(objects, new MapObject(xx, yy, rmj_id_to_index(type)));
-		    if (file_text_eoln(f))
-		        break;
-		}
-		file_text_close(f);
-
-		inf_jump = false;
-		dotkid = false;
-		save_type = SAVETYPE_SHOOT;
-		border_type = BORDER_DEATH;
 	}
 	load_jmap = function(filename) {
 		var f = file_text_open_read(filename);
@@ -206,7 +205,7 @@ function Map() constructor {
 					player_grav = real(v);
 					break;
 				case "objects":
-					ds_list_clear(objects);
+					array_clear(objects);
 					for (var objstr = string_extract(v, "-", 1), p = 1; objstr != ""; objstr = string_extract(v, "-", ++p)) {
 						var i = 1;
 						var yy = base32_string_to_int(string_copy(objstr, i, 2));
@@ -214,7 +213,7 @@ function Map() constructor {
 						while (i <= string_length(objstr)) {
 							var objid = jmap_id_to_index(base32_string_to_int(string_copy(objstr, i, 1)));
 							var xx = base32_string_to_int(string_copy(objstr, i + 1, 2));
-							ds_list_add(objects, new MapObject(xx - 128, yy - 128, objid));
+							array_push(objects, new MapObject(xx - 128, yy - 128, objid));
 							i += 3;
 						}
 					}
@@ -222,217 +221,427 @@ function Map() constructor {
 			}
 		}
 	}
-	load_jmx = function(filename) {}
+
+	// jtool-gms2 map save / load (binary format)
+	save_map = function(filename) {
+		var buf = buffer_create(0, buffer_grow, 1);
+		buffer_write_fixed(buf, buffer_string, "JTOOLMAP");
+		buffer_write_fixed(buf, buffer_string, "BETA");
+		buffer_write_fixed(buf, buffer_string, "inf");
+		buffer_write_fixed(buf, buffer_u8, infjump);
+		buffer_write_fixed(buf, buffer_string, "dot");
+		buffer_write_fixed(buf, buffer_u8, dotkid);
+		buffer_write_fixed(buf, buffer_string, "sav");
+		buffer_write_fixed(buf, buffer_u8, save_type);
+		buffer_write_fixed(buf, buffer_string, "bor");
+		buffer_write_fixed(buf, buffer_u8, border_type);
+		buffer_write_fixed(buf, buffer_string, "px");
+		buffer_write_fixed(buf, buffer_f32, player_x);
+		buffer_write_fixed(buf, buffer_string, "py");
+		buffer_write_fixed(buf, buffer_f32, player_y);
+		buffer_write_fixed(buf, buffer_string, "ps");
+		buffer_write_fixed(buf, buffer_s8, player_xscale);
+		buffer_write_fixed(buf, buffer_string, "pg");
+		buffer_write_fixed(buf, buffer_s8, player_grav);
+		
+		buffer_write_fixed(buf, buffer_string, "objs");
+		var objs = buffer_create(0, buffer_grow, 1);
+		var num = array_length(objects);
+		buffer_write_fixed(objs, buffer_s32, num);
+		for (var i = 0; i < num; i++) {
+			var o = objects[i];
+			buffer_write_fixed(objs, buffer_s16, o.x);
+			buffer_write_fixed(objs, buffer_s16, o.y);
+			buffer_write_fixed(objs, buffer_u16, o.index);
+		}
+		buffer_write_buffer(buf, objs, true);
+		
+		buffer_save(buf, filename);
+	}
+	load_map = function(filename) {
+		var buf = buffer_load(filename);
+		while (buffer_tell(buf) < buffer_get_size(buf)) {
+			var key = buffer_read(buf, buffer_string);
+			switch (key) {
+				case "inf":
+					inf_jump = buffer_read(buf, buffer_u8);
+					break;
+				case "dot":
+					dotkid = buffer_read(buf, buffer_u8);
+					break;
+				case "sav":
+					save_type = buffer_read(buf, buffer_u8);
+					break;
+				case "bor":
+					border_type = buffer_read(buf, buffer_u8);
+					break;
+				case "px":
+					player_x = buffer_read(buf, buffer_f32);
+					break;
+				case "py":
+					player_y = buffer_read(buf, buffer_f32);
+					break;
+				case "ps":
+					player_xscale = buffer_read(buf, buffer_s8);
+					break;
+				case "pg":
+					player_grav = buffer_read(buf, buffer_s8);
+					break;
+				case "objs":
+					array_clear(objects);
+					var objs = buffer_read_buffer(buf, true);
+					var num = buffer_read(objs, buffer_s32);
+					
+					for (var i = 0; i < num; i++) {
+						var xx = buffer_read(objs, buffer_s16);
+						var yy = buffer_read(objs, buffer_s16);
+						var index = buffer_read(objs, buffer_u16);
+						var obj = new MapObject(xx, yy, index);
+						array_push(objects, obj);
+					}
+					break;
+			}
+		}
+	}
+	
+	//---------------------------------------------------------------------------
+	// GameMaker exporter
+	//---------------------------------------------------------------------------
+	
+	save_gm8 = function() {
+		// reference: 
+		// https://github.com/WastedMeerkat/gm81decompiler/blob/master/decompiler/gmk.cpp 
+		
+		var namefile = get_open_filename("Name File|*.json", "");
+		if (namefile == "")
+		    exit;
+    
+		var f = file_text_open_read(namefile);
+		var str = file_text_read_string_all(f);
+		file_text_close(f);
+
+		var namemap = json_decode(str);
+		if (namemap == -1) {
+			show_message("Wrong Name File !");
+			exit;
+		}
+		
+		var filename = get_open_filename("GM8 Project (*.gmk, *.gm81)|*.gmk;*.gm81", "");
+		if (filename == "")
+		    exit;
+    
+		var mapname = get_string("Enter the new room name", "room");
+		if (mapname == "")
+		    exit;
+			
+		var file = buffer_load(filename);
+		show_debug_message(buffer_get_size(file));
+
+		var indexmap = ds_map_create();
+		
+		var newfile = buffer_create(buffer_get_size(file), buffer_grow, 1);
+		
+		// check magic number
+		if (buffer_read_and_write(file, newfile, buffer_s32) != 1234321) {
+			show_message("Wrong GM8 File !");
+			exit;
+		}
+		
+		// check version
+		var ver = buffer_read_and_write(file, newfile, buffer_s32);
+		if (ver != 800 && ver != 810) {
+			show_message("Wrong GM8 File !");
+			exit;
+		}
+		
+		// game id and guid
+		for (var i = 0; i < 5; i++) {
+		    buffer_read_and_write(file, newfile, buffer_s32);
+		}
+		
+		// skip everything we don't need
+		// settings
+		buffer_read_and_write(file, newfile, buffer_s32); // version
+		buffer_read_and_write_buffer(file, newfile, false); // settings data
+
+		// triggers
+		buffer_read_and_write(file, newfile, buffer_s32); // version
+		var count = buffer_read_and_write(file, newfile, buffer_s32); // trigger count
+		for (var i = 0; i < count; i++) {
+		    buffer_read_and_write_buffer(file, newfile, false); // trigger data
+		}
+		buffer_read_and_write(file, newfile, buffer_f64); // last changed double
+
+		// constants
+		buffer_read_and_write(file, newfile, buffer_s32); // version
+		var count = buffer_read_and_write(file, newfile, buffer_s32); // constant count
+		for (var i = 0; i < count; i++) {
+		    buffer_write_pascal_string(newfile, buffer_read_pascal_string(file)); // trigger data
+			buffer_write_pascal_string(newfile, buffer_read_pascal_string(file)); // trigger data
+		}
+		buffer_read_and_write(file, newfile, buffer_f64); // last changed double
+
+		// sound, sprite, background, path, script, font, timeline
+		for (var i = 0; i < 7; i++) {
+		    buffer_read_and_write(file, newfile, buffer_s32); // version
+		    var count = buffer_read_and_write(file, newfile, buffer_s32); // asset count
+		    for (var j = 0; j < count; j++) {
+		        buffer_read_and_write_buffer(file, newfile, false); // asset data
+		    }
+		}
+		
+		// object
+		// we need to get their index
+		buffer_read_and_write(file, newfile, buffer_s32); // version
+		var count = buffer_read_and_write(file, newfile, buffer_s32); // object count
+		for (var i = 0; i < count; i++) {
+		    var obj = buffer_read_and_write_buffer(file, newfile, true); // object data
+			
+		    if (buffer_read(obj, buffer_s32) == 0) {
+				// object has been deleted 
+		        continue;
+		    }
+    
+		    var name = buffer_read_pascal_string(obj);
+    
+		    // find name in the namemap
+		    for (var j = ds_map_find_first(namemap); 
+					!is_undefined(ds_map_find_value(namemap, j)); 
+					j = ds_map_find_next(namemap, j)) {
+		        var value = namemap[? j];
+		        if (name == value) {
+		            indexmap[? j] = i;
+		        }
+		    }
+		}
+		// room 
+		// check version
+		if (buffer_read_and_write(file, newfile, buffer_s32) != 800) {
+		    show_message("error while reading room chunk !");
+		    exit;
+		}
+
+		// origin room count
+		var roomcount = buffer_read(file, buffer_s32); // room count
+
+		// we will add a new room, so we add 1 to new room chunk
+		buffer_write_fixed(newfile, buffer_s32, roomcount + 1);
+
+		// write origin data to new room chunk
+		for (var i = 0; i < roomcount; i++) {
+		    buffer_read_and_write_buffer(file, newfile, false);
+		}
+
+		var newroomindex = roomcount;
+
+		// now we reached the end of room chunk, add a new room
+		// new room chunk
+		var newroom = buffer_create(0, buffer_grow, 1);
+		buffer_write_fixed(newroom, buffer_s32, 1); // is room vaild
+
+		buffer_write_pascal_string(newroom, mapname); // room name
+		buffer_write_fixed(newroom, buffer_f64, 0);         // lastchanged double
+		buffer_write_fixed(newroom, buffer_s32, 541);       // version header
+
+		buffer_write_pascal_string(newroom, "");      // caption
+		buffer_write_fixed(newroom, buffer_s32, 800); // width
+		buffer_write_fixed(newroom, buffer_s32, 608); // height
+		buffer_write_fixed(newroom, buffer_s32, 32);  // snap X
+		buffer_write_fixed(newroom, buffer_s32, 32);  // snap Y
+
+		buffer_write_fixed(newroom, buffer_s32, 0);  // on "◇" grid
+		buffer_write_fixed(newroom, buffer_s32, 50); // room speed
+		buffer_write_fixed(newroom, buffer_s32, 0);  // persistent
+		buffer_write_fixed(newroom, buffer_s32, 0);  // bg color
+		buffer_write_fixed(newroom, buffer_s32, 0);  // bg color draw
+		buffer_write_pascal_string(newroom, "");      // room creation code
+
+		// background
+		buffer_write_fixed(newroom, buffer_s32, 8); // always 8
+		for (var i = 0; i < 8; i++)
+		{
+		    buffer_write_fixed(newroom, buffer_s32, 1);  // visible
+		    buffer_write_fixed(newroom, buffer_s32, 0);  // foreground
+		    buffer_write_fixed(newroom, buffer_s32, -1); // bgindex
+		    buffer_write_fixed(newroom, buffer_s32, 0);  // x
+		    buffer_write_fixed(newroom, buffer_s32, 0);  // y
+		    buffer_write_fixed(newroom, buffer_s32, 1);  // tileh
+		    buffer_write_fixed(newroom, buffer_s32, 1);  // tilev
+		    buffer_write_fixed(newroom, buffer_s32, 0);  // vspeed
+		    buffer_write_fixed(newroom, buffer_s32, 0);  // hspeed
+		    buffer_write_fixed(newroom, buffer_s32, 0);  // stretch
+		}
+
+		// view
+		buffer_write_fixed(newroom, buffer_s32, 1); // enable view
+		buffer_write_fixed(newroom, buffer_s32, 8); // always 8
+		for (var i = 0; i < 8; i++)
+		{
+		    buffer_write_fixed(newroom, buffer_s32, i == 0); // visible
+		    buffer_write_fixed(newroom, buffer_s32, 0);      // view x
+		    buffer_write_fixed(newroom, buffer_s32, 0);      // view y
+		    buffer_write_fixed(newroom, buffer_s32, 800);    // view w
+		    buffer_write_fixed(newroom, buffer_s32, 608);    // view h
+		    buffer_write_fixed(newroom, buffer_s32, 0);      // port x
+		    buffer_write_fixed(newroom, buffer_s32, 0);      // port y
+		    buffer_write_fixed(newroom, buffer_s32, 800);    // port w
+		    buffer_write_fixed(newroom, buffer_s32, 608);    // port h
+		    buffer_write_fixed(newroom, buffer_s32, 400);    // hborder
+		    buffer_write_fixed(newroom, buffer_s32, 304);    // vborder
+		    buffer_write_fixed(newroom, buffer_s32, 0);      // hspeed
+		    buffer_write_fixed(newroom, buffer_s32, 0);      // vspeed
+		    buffer_write_fixed(newroom, buffer_s32, -1);     // follow object
+		}
+
+		// instance
+		
+		// get instance count
+		var num = 0;
+		for (var i = 0; i < array_length(objects); i++) {
+			var o = objects[i];
+			if (!ds_map_exists(indexmap, object_get_name(o.index)))
+				continue;
+			num++;
+		}
+		
+		// write instance data
+		buffer_write_fixed(newroom, buffer_s32, num);
+		var oid = 100001;
+		for (var i = 0; i < array_length(objects); i++) {
+			var o = objects[i];
+			if (!ds_map_exists(indexmap, object_get_name(o.index)))
+				continue;
+				
+			buffer_write_fixed(newroom, buffer_s32, o.x); // instance x          
+		    buffer_write_fixed(newroom, buffer_s32, o.y); // instance y          
+		    buffer_write_fixed(newroom, buffer_s32, indexmap[? object_get_name(o.index)]); // object index        
+		    buffer_write_fixed(newroom, buffer_s32, oid); // instance id
+		    buffer_write_pascal_string(newroom, ""); // instance creation code    
+		    buffer_write_fixed(newroom, buffer_s32, 0); // locked         
+    
+		    oid += 1;
+		}
+
+		// tile
+		// make a tile system sometime? skip now
+		buffer_write_fixed(newroom, buffer_s32, 0); // tile count
+
+		// maker settings
+		buffer_write_fixed(newroom, buffer_s32, 0);   // remember room editor info
+		buffer_write_fixed(newroom, buffer_s32, 800); // editor width
+		buffer_write_fixed(newroom, buffer_s32, 608); // editor height
+		buffer_write_fixed(newroom, buffer_s32, 1);   // show grid
+		buffer_write_fixed(newroom, buffer_s32, 1);   // show obj
+		buffer_write_fixed(newroom, buffer_s32, 1);   // show tile
+		buffer_write_fixed(newroom, buffer_s32, 1);   // show bg
+		buffer_write_fixed(newroom, buffer_s32, 1);   // show fg
+		buffer_write_fixed(newroom, buffer_s32, 1);   // show view
+		buffer_write_fixed(newroom, buffer_s32, 1);   // delete underlying obj
+		buffer_write_fixed(newroom, buffer_s32, 1);   // delete underlying tile
+		buffer_write_fixed(newroom, buffer_s32, 0);   // tab
+		buffer_write_fixed(newroom, buffer_s32, 0);   // xpos scroll
+		buffer_write_fixed(newroom, buffer_s32, 0);   // ypos scroll
+
+		buffer_write_buffer(newfile, newroom, true); // write to new file
+		
+		buffer_read_and_write(file, newfile, buffer_s32); // last instance id
+		buffer_read_and_write(file, newfile, buffer_s32); // last tile id
+		
+		// included file
+		buffer_read_and_write(file, newfile, buffer_s32); // version
+		var count = buffer_read_and_write(file, newfile, buffer_s32); // included file count
+		for (var i = 0; i < count; i++) {
+		    buffer_read_and_write_buffer(file, newfile, false); // included file data
+		}
+
+		// packages
+		buffer_read_and_write(file, newfile, buffer_s32); // version
+		var count = buffer_read_and_write(file, newfile, buffer_s32); // package count
+		for (var i = 0; i < count; i++) {
+		    buffer_read_and_write_buffer(file, newfile, false); // package data
+		}
+
+		// game information
+		buffer_read_and_write(file, newfile, buffer_s32); // version
+		buffer_read_and_write_buffer(file, newfile, false); // game information data
+		
+		// lib creation code
+		buffer_read_and_write(file, newfile, buffer_s32); // version
+		var count = buffer_read_and_write(file, newfile, buffer_s32); // lib creation code count
+		for (var i = 0; i < count; i++) {
+		    buffer_read_and_write_buffer(file, newfile, false); // lib creation code data
+		}
+		
+		// room order
+		buffer_read_and_write(file, newfile, buffer_s32); // version
+		var count = buffer_read_and_write(file, newfile, buffer_s32); // room order count
+		for (var i = 0; i < count; i++) {
+		    buffer_read_and_write(file, newfile, buffer_s32); // room order data
+		}
+		
+		// resource tree
+		// status: 1 = resource group, 2 = normal group, 3 = resource
+		// group: 1 = objects group, 2 = sprites group, 3 = sounds group, 4 = rooms group, 6 = backgrounds group, 
+		//        7 = scripts group, 8 = paths group, 9 = fonts group, 10 = game information, 11 = global game settings, 
+		//        12 = timelines group, 13 = extension packages
+
+		for (var i = 0; i < 12; i++) {
+		    buffer_read_and_write(file, newfile, buffer_s32); // status
+		    buffer_read_and_write(file, newfile, buffer_s32); // group
+		    buffer_read_and_write(file, newfile, buffer_s32); // index
+			
+		    var name = buffer_read_pascal_string(file); // name
+		    buffer_write_pascal_string(newfile, name); 
+			
+		    var isrooms = false;
+		    if (name == "Rooms") {
+		        isrooms = true;
+			}
+    
+		    var count = buffer_read(file, buffer_s32); // child count
+		    buffer_write_fixed(newfile, buffer_s32, count + isrooms);
+		    read_tree_children(file, count, newfile);
+		    if (isrooms) {
+				// add a new room to resource tree
+		        buffer_write_fixed(newfile, buffer_s32, 3);            // status
+		        buffer_write_fixed(newfile, buffer_s32, 4);            // group
+		        buffer_write_fixed(newfile, buffer_s32, newroomindex); // index
+		        buffer_write_pascal_string(newfile, mapname);          // name
+		        buffer_write_fixed(newfile, buffer_s32, 0);            // child count
+		    }
+		}
+		
+		// write a backup
+		if (file_exists(filename + ".bak")) {
+			file_delete(filename + ".bak");
+		}
+		buffer_save(file, filename + ".bak");
+		
+		// write to file
+		file_delete(filename);
+		buffer_save(newfile, filename);
+	}
+		
+	save_gms = function(filename) {}
+	save_gms2 = function(filename) {}
+	
+}
+
+function read_tree_children(file, _count, newfile) {
+	for (var i = 0; i < _count; i++) {
+	    buffer_read_and_write(file, newfile, buffer_s32); // status
+	    buffer_read_and_write(file, newfile, buffer_s32); // group
+	    buffer_read_and_write(file, newfile, buffer_s32); // index
+	    var name = buffer_read_pascal_string(file);       // name
+	    buffer_write_pascal_string(newfile, name);
+	    var count = buffer_read_and_write(file, newfile, buffer_s32); // child count
+	    
+	    read_tree_children(file, count, newfile);
+	}
 }
 
 function MapObject(_x, _y, _index) constructor {
 	x = _x;
 	y = _y;
 	index = _index;
-}
-
-function index_to_jmap_id(objectindex) {
-	switch (objectindex) {
-	    case obj_block:
-	        return 1;
-	    case obj_mini_block:
-	        return 2;
-	    case obj_spike_up:
-	        return 3;
-	    case obj_spike_right:
-	        return 4;
-	    case obj_spike_left:
-	        return 5;
-	    case obj_spike_down:
-	        return 6;
-	    case obj_mini_spike_up:
-	        return 7;
-	    case obj_mini_spike_right:
-	        return 8;
-	    case obj_mini_spike_left:
-	        return 9;
-	    case obj_mini_spike_down:
-	        return 10;
-	    case obj_apple:
-	        return 11;
-	    case obj_save:
-	        return 12;
-	    case obj_platform:
-	        return 13;
-	    case obj_water:
-	        return 14;
-	    case obj_water2:
-	        return 15;
-	    case obj_vine_l:
-	        return 16;
-	    case obj_vine_r:
-	        return 17;
-	    case obj_killer_block:
-	        return 18;
-	    case obj_bullet_blocker:
-	        return 19;
-	    case obj_player_start:
-	        return 20;
-	    case obj_warp:
-	        return 21;
-	    case obj_jump_refresher:
-	        return 22;
-	    case obj_water3:
-	        return 23;
-	    case obj_gravity_arrow_up:
-	        return 24;
-	    case obj_gravity_arrow_down:
-	        return 25;
-	    case obj_save_flip:
-	        return 26;
-	    case obj_mini_killer_block:
-	        return 27;
-	    default:
-	        return -1;
-	}
-}
-
-function jmap_id_to_index(saveid) {
-	switch (saveid) {
-	    case 1:
-	        return obj_block;
-	    case 2:
-	        return obj_mini_block;
-	    case 3:
-	        return obj_spike_up;
-	    case 4:
-	        return obj_spike_right;
-	    case 5:
-	        return obj_spike_left;
-	    case 6:
-	        return obj_spike_down;
-	    case 7:
-	        return obj_mini_spike_up;
-	    case 8:
-	        return obj_mini_spike_right;
-	    case 9:
-	        return obj_mini_spike_left;
-	    case 10:
-	        return obj_mini_spike_down;
-	    case 11:
-	        return obj_apple;
-	    case 12:
-	        return obj_save;
-	    case 13:
-	        return obj_platform;
-	    case 14:
-	        return obj_water;
-	    case 15:
-	        return obj_water2;
-	    case 16:
-	        return obj_vine_l;
-	    case 17:
-	        return obj_vine_r;
-	    case 18:
-	        return obj_killer_block;
-	    case 19:
-	        return obj_bullet_blocker;
-	    case 20:
-	        return obj_player_start;
-	    case 21:
-	        return obj_warp;
-	    case 22:
-	        return obj_jump_refresher;
-	    case 23:
-	        return obj_water3;
-	    case 24:
-	        return obj_gravity_arrow_up;
-	    case 25:
-	        return obj_gravity_arrow_down;
-	    case 26:
-	        return obj_save_flip;
-	    case 27:
-	        return obj_mini_killer_block;
-	    default:
-	        return noone;
-	}
-}
-
-function index_to_rmj_id(objectindex) {
-	switch (objectindex) {
-	    case obj_block:
-	        return 2;
-	    case obj_spike_up:
-	        return 12;
-	    case obj_spike_right:
-	        return 11;
-	    case obj_spike_left:
-	        return 10;
-	    case obj_spike_down:
-	        return 9;
-	    case obj_mini_spike_up:
-	        return 19;
-	    case obj_mini_spike_right:
-	        return 18;
-	    case obj_mini_spike_left:
-	        return 17;
-	    case obj_mini_spike_down:
-	        return 16;
-	    case obj_apple:
-	        return 20;
-	    case obj_save:
-	        return 32;
-	    case obj_platform:
-	        return 31;
-	    case obj_water:
-	        return 23;
-	    case obj_water2:
-	        return 30;
-	    case obj_vine_l:
-	        return 29;
-	    case obj_vine_r:
-	        return 28;
-	    case obj_killer_block:
-	        return 27;
-	    case obj_player_start:
-	        return 3;
-	    default:
-	        return -1;
-	}
-}
-
-function rmj_id_to_index(saveid) {
-	switch (saveid) {
-	    case 2:
-			return obj_block;
-	    case 12:
-	        return obj_spike_up;
-	    case 11:
-	        return obj_spike_right;
-	    case 10:
-	        return obj_spike_left;
-	    case 9:
-	        return obj_spike_down;
-	    case 19:
-	        return obj_mini_spike_up;
-	    case 18:
-	        return obj_mini_spike_right;
-	    case 17:
-	        return obj_mini_spike_left;
-	    case 16:
-	        return obj_mini_spike_down;
-	    case 32:
-	        return obj_save;
-	    case 31:
-	        return obj_platform;
-	    case 23:
-	        return obj_water;
-	    case 30:
-	        return obj_water2;
-	    case 20:
-	        return obj_apple;
-	    case 27:
-	        return obj_killer_block;
-	    case 28:
-	        return obj_vine_r;
-	    case 29:
-	        return obj_vine_l;
-	    case 3:
-	        return obj_player_start;
-	}
 }

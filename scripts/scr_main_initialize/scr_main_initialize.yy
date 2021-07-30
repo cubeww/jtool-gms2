@@ -2,8 +2,8 @@
   "isDnD": false,
   "isCompatibility": false,
   "parent": {
-    "name": "world",
-    "path": "folders/Scripts/world.yy",
+    "name": "core",
+    "path": "folders/Scripts/core.yy",
   },
   "resourceVersion": "1.0",
   "name": "scr_main_initialize",

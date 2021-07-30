@@ -43,11 +43,11 @@ function add_move_event(_id, _old_x, _old_y, _new_x, _new_y) {
 function finish_event() {
 	if (cur_event != noone) {
 		// clean useless events
-		var size = ds_list_size(undo_list);
+		var size = array_length(undo_list);
 		for (var i = undo_pos; i < size; i++) {
-			ds_list_delete(undo_list, undo_pos);
+			array_delete(undo_list, undo_pos, 1);
 		}
-		ds_list_add(undo_list, cur_event);
+		array_push(undo_list, cur_event);
 		cur_event = noone;
 		undo_pos++;
 	}
@@ -198,9 +198,9 @@ if (keyboard_check(vk_control)) {
 		// undo
 		if (undo_pos >= 1) {
 			undo_pos--;
-			var last_event = undo_list[| undo_pos];
-			for (var i = 0; i < ds_list_size(last_event.sub_events); i++) {
-				var sub_event = last_event.sub_events[| i];
+			var last_event = undo_list[undo_pos];
+			for (var i = 0; i < array_length(last_event.sub_events); i++) {
+				var sub_event = last_event.sub_events[i];
 				switch (last_event.type) {
 					case UNDO_EVENT_CREATE:
 						var obj = object_at_pos(sub_event.x, sub_event.y, sub_event.obj_index);
@@ -220,10 +220,10 @@ if (keyboard_check(vk_control)) {
 	}
 	if (keyboard_check_pressed(ord("Y"))) {
 		// redo
-		if (undo_pos < ds_list_size(undo_list)) {
-			var last_event = undo_list[| undo_pos];
-			for (var i = 0; i < ds_list_size(last_event.sub_events); i++) {
-				var sub_event = last_event.sub_events[| i];
+		if (undo_pos < array_length(undo_list)) {
+			var last_event = undo_list[undo_pos];
+			for (var i = 0; i < array_length(last_event.sub_events); i++) {
+				var sub_event = last_event.sub_events[i];
 				switch (last_event.type) {
 					case UNDO_EVENT_CREATE:
 						instance_create_layer(sub_event.x, sub_event.y, palette_object_get_layer(sub_event.obj_index), sub_event.obj_index);

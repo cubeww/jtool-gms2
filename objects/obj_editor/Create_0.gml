@@ -29,7 +29,7 @@ ysnapped = 0;
 cursor_in_area = false;
 
 // undo & redo
-undo_list = ds_list_create();
+undo_list = [];
 undo_pos = 0;
 
 #macro UNDO_EVENT_CREATE 0
@@ -38,10 +38,10 @@ undo_pos = 0;
 
 function UndoEvent(_type) constructor {
 	type = _type;
-	sub_events = ds_list_create();
+	sub_events = [];
 	
 	add_sub_event = function(event) {
-		ds_list_add(sub_events, event);
+		array_push(sub_events, event);
 	}
 }
 

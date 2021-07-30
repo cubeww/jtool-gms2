@@ -1,0 +1,318 @@
+save_gm8 = function() {
+		var namefile = get_open_filename("Name File|*.json", "");
+		if (namefile == "")
+		    exit;
+    
+		var f = file_text_open_read(namefile);
+		var str = file_text_read_string_all(f);
+		file_text_close(f);
+
+		var namemap = json_decode(str);
+		if (namemap == -1) {
+			show_message("Wrong Name File !");
+			exit;
+		}
+		
+		var filename = get_open_filename("GM8 Project (*.gmk, *.gm81)|*.gmk;*.gm81", "");
+		if (filename == "")
+		    exit;
+    
+		var mapname = get_string("Enter the new room name", "room");
+		if (mapname == "")
+		    exit;
+			
+		var file = buffer_load(filename);
+		var indexmap = ds_map_create();
+		
+		// check magic number
+		if (buffer_read(file, buffer_u32) != 1234321) {
+			show_message("Wrong GM8 File !");
+			exit;
+		}
+		
+		// check version
+		var ver = buffer_read(file, buffer_u32);
+		if (ver != 800 && ver != 810) {
+			show_message("Wrong GM8 File !");
+			exit;
+		}
+		
+		// skip everything we don't need
+		// settings
+		// {...} {settings length} {settings data (zlib)}
+		buffer_seek(file, buffer_seek_start, 32);
+		buffer_read_buffer(file, false);
+
+		// triggers
+		// {version header} {triggers count} {single trigger length} {single trigger data (zlib)} {lastchanged double}
+		buffer_read(file, buffer_u32);
+		var count = buffer_read(file, buffer_u32);
+		for (var i = 0; i < count; i++)
+		{
+		    buffer_read_buffer(file, false);
+		}
+		buffer_read(file, buffer_f64);
+
+		// constants
+		// {version header} {constants count} {single constant name} {single constant value} {lastchanged double}
+		buffer_read(file, buffer_u32);
+		var count = buffer_read(file, buffer_u32);
+		for (var i = 0; i < count; i++)
+		{
+		    buffer_read_buffer(file, false);
+			buffer_read_buffer(file, false);
+		}
+		buffer_read(file, buffer_f64);
+
+		// sound, sprite, background, path, script, font, timeline
+		// {version header} {assets count} {single asset length} {single asset data (zlib)}
+		for (var i = 0; i < 7; i++) {
+		    buffer_read(file, buffer_u32);
+		    var count = buffer_read(file, buffer_u32);
+		    for (var j = 0; j < count; j++)
+		    {
+		        buffer_read_buffer(file, false);
+		    }
+		}
+		
+		// object
+		// we need to get their index
+		buffer_read(file, buffer_u32);
+		var count = buffer_read(file, buffer_u32);
+		for (var i = 0; i < count; i++) {
+		    var obj = buffer_read_buffer(file, true);
+			
+		    if (buffer_read(obj, buffer_u32) == 0) {
+				// object has been deleted 
+		        continue;
+		    }
+    
+		    var name = buffer_read_pascal_string(obj);
+    
+		    // find name in the namemap
+		    for (var j = ds_map_find_first(namemap); 
+					!is_undefined(ds_map_find_value(namemap, j)); 
+					j = ds_map_find_next(namemap, j)) {
+		        var value = namemap[? j];
+		        if (name == value) {
+		            indexmap[? j] = i;
+		        }
+		    }
+		}
+		// room 
+		// {version header} {room count} {single room length} {single room data (zlib)}
+
+		// check version header
+		if (buffer_read(file, buffer_u32) != 800) {
+		    show_message("error while reading room chunk !");
+		    exit;
+		}
+
+		// the start position of the room chunk (->room count)
+		var roompos = buffer_tell(file);
+
+		// new rooms chunk
+		var newrooms = buffer_create(0, buffer_grow, 1); 
+
+		// origin room count
+		var roomcount = buffer_read(file, buffer_u32);
+
+		// we will add a new room, so we add 1 to new room chunk
+		buffer_write_fixed(newrooms, buffer_u32, roomcount + 1);
+
+		// write origin data to new room chunk
+		for (var i = 0; i < roomcount; i++) {
+		    buffer_write_buffer(newrooms, buffer_read_buffer(file, true), true);
+		}
+
+		var newroomindex = roomcount;
+
+		// now we reached the end of room chunk, add a new room
+		// new SINGLE room chunk
+		var newroom = buffer_create(0, buffer_grow, 1);
+		buffer_write_fixed(newroom, buffer_u32, 1); // is room vaild
+
+		buffer_write_pascal_string(newroom, mapname); // room name
+		buffer_write_fixed(newroom, buffer_f64, 0);         // lastchanged double
+		buffer_write_fixed(newroom, buffer_u32, 541);       // version header
+
+		buffer_write_pascal_string(newroom, "");      // caption
+		buffer_write_fixed(newroom, buffer_u32, 800); // width
+		buffer_write_fixed(newroom, buffer_u32, 608); // height
+		buffer_write_fixed(newroom, buffer_u32, 32);  // snap X
+		buffer_write_fixed(newroom, buffer_u32, 32);  // snap Y
+
+		buffer_write_fixed(newroom, buffer_u32, 0);  // on "◇" grid
+		buffer_write_fixed(newroom, buffer_u32, 50); // room speed
+		buffer_write_fixed(newroom, buffer_u32, 0);  // persistent
+		buffer_write_fixed(newroom, buffer_u32, 0);  // bg color
+		buffer_write_fixed(newroom, buffer_u32, 0);  // bg color draw
+		buffer_write_pascal_string(newroom, "");      // room creation code
+
+		// background
+		buffer_write_fixed(newroom, buffer_u32, 8); // always 8
+		for (var i = 0; i < 8; i++)
+		{
+		    buffer_write_fixed(newroom, buffer_u32, 1);  // visible
+		    buffer_write_fixed(newroom, buffer_u32, 0);  // foreground
+		    buffer_write_fixed(newroom, buffer_s32, -1); // bgindex
+		    buffer_write_fixed(newroom, buffer_u32, 0);  // x
+		    buffer_write_fixed(newroom, buffer_u32, 0);  // y
+		    buffer_write_fixed(newroom, buffer_u32, 1);  // tileh
+		    buffer_write_fixed(newroom, buffer_u32, 1);  // tilev
+		    buffer_write_fixed(newroom, buffer_u32, 0);  // vspeed
+		    buffer_write_fixed(newroom, buffer_u32, 0);  // hspeed
+		    buffer_write_fixed(newroom, buffer_u32, 0);  // stretch
+		}
+
+		// view
+		buffer_write_fixed(newroom, buffer_u32, 1); // enable view
+		buffer_write_fixed(newroom, buffer_u32, 8); // always 8
+		for (var i = 0; i < 8; i++)
+		{
+		    buffer_write_fixed(newroom, buffer_u32, i == 0); // visible
+		    buffer_write_fixed(newroom, buffer_u32, 0);      // view x
+		    buffer_write_fixed(newroom, buffer_u32, 0);      // view y
+		    buffer_write_fixed(newroom, buffer_u32, 800);    // view w
+		    buffer_write_fixed(newroom, buffer_u32, 608);    // view h
+		    buffer_write_fixed(newroom, buffer_u32, 0);      // port x
+		    buffer_write_fixed(newroom, buffer_u32, 0);      // port y
+		    buffer_write_fixed(newroom, buffer_u32, 800);    // port w
+		    buffer_write_fixed(newroom, buffer_u32, 608);    // port h
+		    buffer_write_fixed(newroom, buffer_u32, 400);    // hborder
+		    buffer_write_fixed(newroom, buffer_u32, 304);    // vborder
+		    buffer_write_fixed(newroom, buffer_u32, 0);      // hspeed
+		    buffer_write_fixed(newroom, buffer_u32, 0);      // vspeed
+		    buffer_write_fixed(newroom, buffer_s32, -1);     // follow object
+		}
+
+		// instance
+		buffer_write_fixed(newroom, buffer_u32, array_length(objects));
+		var oid = 100001;
+		for (var i = 0; i < array_length(objects); i++) {
+			var o = objects[i];
+			buffer_write_fixed(newroom, buffer_s32, o.x); // instance x          
+		    buffer_write_fixed(newroom, buffer_s32, o.y); // instance y          
+		    buffer_write_fixed(newroom, buffer_u32, indexmap[? object_get_name(o.index)]); // object index        
+		    buffer_write_fixed(newroom, buffer_u32, oid); // instance id
+		    buffer_write_pascal_string(newroom, ""); // instance creation code    
+		    buffer_write_fixed(newroom, buffer_u32, 0); // locked         
+    
+		    oid += 1;
+		}
+
+		// tile
+		// make a tile system sometime? idk, skip now
+		buffer_write_fixed(newroom, buffer_u32, 0);
+
+		// maker settings
+		buffer_write_fixed(newroom, buffer_u32, 0);   // remember room editor info
+		buffer_write_fixed(newroom, buffer_u32, 800); // editor width
+		buffer_write_fixed(newroom, buffer_u32, 608); // editor height
+		buffer_write_fixed(newroom, buffer_u32, 1);   // show grid
+		buffer_write_fixed(newroom, buffer_u32, 1);   // show obj
+		buffer_write_fixed(newroom, buffer_u32, 1);   // show tile
+		buffer_write_fixed(newroom, buffer_u32, 1);   // show bg
+		buffer_write_fixed(newroom, buffer_u32, 1);   // show fg
+		buffer_write_fixed(newroom, buffer_u32, 1);   // show view
+		buffer_write_fixed(newroom, buffer_u32, 1);   // delete underlying obj
+		buffer_write_fixed(newroom, buffer_u32, 1);   // delete underlying tile
+		buffer_write_fixed(newroom, buffer_u32, 0);   // tab
+		buffer_write_fixed(newroom, buffer_u32, 0);   // xpos scroll
+		buffer_write_fixed(newroom, buffer_u32, 0);   // ypos scroll
+
+		buffer_write_buffer(newrooms, newroom, true); // write to rooms chunk
+		
+		var newfile = buffer_create(0, buffer_grow, 1); // new gmk file
+		
+		// merge changes
+		buffer_merge(newfile, file, 0, roompos);
+		buffer_merge(newfile, newrooms);
+		
+		// last instance / tile id
+		buffer_write_fixed(newfile, buffer_u32, buffer_read(file, buffer_u32));
+		buffer_write_fixed(newfile, buffer_u32, buffer_read(file, buffer_u32));
+		
+		var roomendpos = buffer_tell(file);
+		
+		// included file
+		// {version header} {files count} {single file length} {single file data (zlib)}
+		buffer_read(file, buffer_u32);
+		var count = buffer_read(file, buffer_u32);
+		for (var i = 0; i < count; i++)
+		{
+		    buffer_read_buffer(file, false);
+		}
+
+		// packages
+		// {version header} {packages count} {single package name string}
+		buffer_read(file, buffer_u32);
+		var count = buffer_read(file, buffer_u32);
+		for (var i = 0; i < count; i++)
+		{
+		    buffer_read_buffer(file, false);
+		}
+
+		// game information
+		// {version header} {length} {data}
+		buffer_read(file, buffer_u32);
+		buffer_read_pascal_string(file);
+
+		// lib creation code & room order
+		buffer_read(file, buffer_u32);
+		var count = buffer_read(file, buffer_u32);
+		for (var i = 0; i < count; i++) {
+		    buffer_read_buffer(file, false);
+		}
+
+		buffer_read(file, buffer_u32);
+		var count = buffer_read(file, buffer_u32);
+		for (var i = 0; i < count; i++) {
+		    buffer_read(file, buffer_u32);
+		}
+		
+		// resource tree
+		// {status} {group} {index} {name} {child count}
+		// status: 1 = resource group, 2 = normal group, 3 = resource
+		// group: 1 = objects group, 2 = sprites group, 3 = sounds group, 4 = rooms group, 6 = backgrounds group, 
+		//        7 = scripts group, 8 = paths group, 9 = fonts group, 10 = game information, 11 = global game settings, 
+		//        12 = timelines group, 13 = extension packages
+
+		var newtree = buffer_create(0, buffer_grow, 1);
+		var treepos = buffer_tell(file);
+		for (var i = 0; i < 12; i++)
+		{
+		    buffer_write_fixed(newtree, buffer_u32, buffer_read(file, buffer_u32));  
+		    buffer_write_fixed(newtree, buffer_u32, buffer_read(file, buffer_u32));
+		    buffer_write_fixed(newtree, buffer_u32, buffer_read(file, buffer_u32));
+		    var name = buffer_read_pascal_string(file);
+		    buffer_write_pascal_string(newtree, name);  
+		    var isrooms = false;
+		    if (name == "Rooms") {
+		        isrooms = true;
+			}
+    
+		    var count = buffer_read(file, buffer_u32);
+		    buffer_write_fixed(newtree, buffer_u32, count + isrooms);
+		    read_tree_children(file, count, newtree);
+		    if (isrooms) 
+		    {
+		        buffer_write_fixed(newtree, buffer_u32, 3);
+		        buffer_write_fixed(newtree, buffer_u32, 4);
+		        buffer_write_fixed(newtree, buffer_u32, newroomindex);
+		        buffer_write_pascal_string(newtree, mapname);
+		        buffer_write_fixed(newtree, buffer_u32, 0);
+		    }
+		}
+		
+		// final write
+		buffer_merge(newfile, file, roomendpos, treepos - roomendpos);
+		buffer_merge(newfile, newtree);
+		
+		// write to file
+		buffer_save(newfile, filename+"new.gmk");
+
+		// write a backup
+		// hbuffer_write_to_file(file, filename + ".bak");
+		
+	}
