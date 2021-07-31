@@ -108,7 +108,10 @@ btn_exportgms2 = tab_file.add_child(new Button(xx, yy, w, h, "Export GMS2 Map", 
 }));
 
 yy += dy;
-btn_exportiwm = tab_file.add_child(new Button(xx, yy, w, h, "Export IWM Map", noone, function() {}));
+btn_exportiwm = tab_file.add_child(new Button(xx, yy, w, h, "Export IWM Map", noone, function() {
+	global.current_map.save_current();
+	global.current_map.save_iwm();
+}));
 
 // map tab
 tab_map = menu.add_child(new ToggleButton(xo + dx * 1, yo, w, h,

@@ -310,9 +310,10 @@ function Map() constructor {
 	
 	save_gm8 = function() {
 		// reference: 
-		// https://github.com/WastedMeerkat/gm81decompiler/blob/master/decompiler/gmk.cpp 
+		// https://github.com/WastedMeerkat/gm81decompiler/blob/master/decompiler/gmk.cpp
+		// the code is messy, read it at your own risk
 		
-		var namefile = get_open_filename("Name File|*.json", "");
+		var namefile = get_open_filename_ext("GM8 Name File (*.gm8)|*.gm8", "", get_working_directory() + "/export_name/", "Select Export Name File");
 		if (namefile == "")
 		    exit;
     
@@ -622,7 +623,7 @@ function Map() constructor {
 	}
 		
 	save_gms = function() {
-		var namefile = get_open_filename("Name File|*.json", "");
+		var namefile = get_open_filename_ext("GMS 1.4 Name File (*.gms)|*.gms", "", get_working_directory() + "/export_name/", "Select Export Name File");
 		if (namefile == "")
 		    exit;
     
@@ -718,7 +719,8 @@ function Map() constructor {
 	}
 		
 	save_gms2 = function() {
-		var namefile = get_open_filename("Name File|*.json", "");
+		// it’s actually a combination of several "template snippets"
+		var namefile = get_open_filename_ext("GMS2 Name File (*.gms2)|*.gms2", "", get_working_directory() + "/export_name/", "Select Export Name File");
 		if (namefile == "")
 		    exit;
     
@@ -741,6 +743,7 @@ function Map() constructor {
 		var roompath = string_copy(filename, 
 				string_length(filename) - 3 - 2 * namelen, 
 				2 * namelen + 11);	
+		roompath = string_replace_all(roompath, @"\", "/");
 			
 		var str = get_gms2_template(0);
 		// write instances
@@ -762,7 +765,7 @@ function Map() constructor {
 		str += get_gms2_template(1);
 		for (var i = 0; i < array_length(inst_ids); ++i) {
 			var o = inst_ids[i];
-			str += "{\"name\":\"" + o + "\",\"path\":\"" + string_replace_all(roompath, @"\", "/") + "\",},";
+			str += "{\"name\":\"" + o + "\",\"path\":\"" + roompath + "\",},";
 		}
 		
 		// save to file
@@ -772,6 +775,187 @@ function Map() constructor {
 		file_text_close(f);
 	}
 	
+	save_iwm = function() {
+		// IWM map directory
+		var path = environment_get_variable("LOCALAPPDATA") + @"\IWM\maps\";
+
+		if (!directory_exists(path))
+		    directory_create(path);
+    
+		var namefile = get_open_filename_ext("I Wanna Maker Name File (*.iwm)|*.iwm", "", get_working_directory() + "/export_name/", "Select Export Name File");
+		if (namefile == "")
+		    exit;    
+       
+		var f = file_text_open_read(namefile);
+		var str = file_text_read_string_all(f);
+		file_text_close(f);
+
+		var namemap = json_decode(str);
+		if (namemap == -1) {
+		    show_message("Wrong name file !");   
+		    exit;
+		}    
+
+		var mapname = get_string("Enter the new map name", "map");
+		if (mapname == "")
+		    exit;
+
+		var instcount = 0;
+		for (var i = 0; i < array_length(objects); i++) {
+		    var o = objects[i];
+		    if (!ds_map_exists(namemap, object_get_name(o.index)) ||
+					o.index == obj_vine_l || o.index == obj_vine_r)
+		        continue;
+		    instcount++;
+		}
+
+		DerpXmlWrite_New();
+
+		// IWM does not support XML with line breaks now :O
+		DerpXmlWrite_Config("", "");
+
+		DerpXmlWrite_OpenTag("sfm_map");
+		    DerpXmlWrite_OpenTag("head");
+		        DerpXmlWrite_OpenTag("name");
+		            DerpXmlWrite_Text(mapname);
+		        DerpXmlWrite_CloseTag();
+        
+		        DerpXmlWrite_OpenTag("version");
+		            DerpXmlWrite_Text("59");
+		        DerpXmlWrite_CloseTag();
+        
+		        DerpXmlWrite_OpenTag("tileset");
+		            DerpXmlWrite_Text("1");
+		        DerpXmlWrite_CloseTag();
+        
+		        DerpXmlWrite_OpenTag("tileset2");
+		            DerpXmlWrite_Text("1");
+		        DerpXmlWrite_CloseTag();
+        
+		        DerpXmlWrite_OpenTag("bg");
+		            DerpXmlWrite_Text("0");
+		        DerpXmlWrite_CloseTag();
+        
+		        DerpXmlWrite_OpenTag("spikes");
+		            DerpXmlWrite_Text("1");
+		        DerpXmlWrite_CloseTag();
+        
+		        DerpXmlWrite_OpenTag("width");
+		            DerpXmlWrite_Text("800");
+		        DerpXmlWrite_CloseTag();
+        
+		        DerpXmlWrite_OpenTag("height");
+		            DerpXmlWrite_Text("608");
+		        DerpXmlWrite_CloseTag();
+        
+		        DerpXmlWrite_OpenTag("colors");
+		            DerpXmlWrite_Text("5A0200000600000004000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000");
+		        DerpXmlWrite_CloseTag();
+        
+		        DerpXmlWrite_OpenTag("scroll_mode");
+		            DerpXmlWrite_Text("0");
+		        DerpXmlWrite_CloseTag();
+        
+		        DerpXmlWrite_OpenTag("music");
+		            DerpXmlWrite_Text("1");
+		        DerpXmlWrite_CloseTag();
+        
+		        DerpXmlWrite_OpenTag("num_objects");
+		            DerpXmlWrite_Text(string(instcount));
+		        DerpXmlWrite_CloseTag();
+        
+		    DerpXmlWrite_CloseTag();
+			
+		    DerpXmlWrite_OpenTag("objects");
+		        for (var i = 0; i < array_length(objects); i++) {
+				    var o = objects[i];
+				    if (!ds_map_exists(namemap, object_get_name(o.index)) ||
+							o.index == obj_vine_l || o.index == obj_vine_r)
+				        continue;            
+		            DerpXmlWrite_OpenTag("object");
+		                DerpXmlWrite_Attribute("type", ds_map_find_value(namemap, object_get_name(o.index)));
+		                DerpXmlWrite_Attribute("x", string(o.x + 16));
+		                DerpXmlWrite_Attribute("y", string(o.y + 16));
+		                if (o.index == obj_spike_up)
+		                    DerpXmlWrite_Attribute("sprite_angle", "90");                
+		                if (o.index == obj_spike_left)
+		                    DerpXmlWrite_Attribute("sprite_angle", "180");
+		                if (o.index == obj_spike_down)
+		                    DerpXmlWrite_Attribute("sprite_angle", "270");
+		                if (o.index == obj_spike_right)
+		                    DerpXmlWrite_Attribute("sprite_angle", "0");
+		                if (o.index == obj_mini_spike_up)
+		                    DerpXmlWrite_Attribute("sprite_angle", "90");
+		                if (o.index == obj_mini_spike_left)
+		                    DerpXmlWrite_Attribute("sprite_angle", "180");
+		                if (o.index == obj_mini_spike_down)
+		                    DerpXmlWrite_Attribute("sprite_angle", "270");
+		                if (o.index == obj_mini_spike_right)
+		                    DerpXmlWrite_Attribute("sprite_angle", "0");
+		                // params
+		                if (o.index != obj_player_start) {
+		                    DerpXmlWrite_LeafElement("param", "");
+		                        DerpXmlWrite_Attribute("key", "scale");
+		                        DerpXmlWrite_Attribute("val", "1");
+		                }
+		                if (o.index == obj_block || o.index == obj_mini_block) {
+		                    DerpXmlWrite_LeafElement("param", "");
+		                        DerpXmlWrite_Attribute("key", "tileset");
+		                        DerpXmlWrite_Attribute("val", "0");
+		                    // vine check
+							for (var j = 0; j < array_length(objects); j++) {
+								var oo = objects[j];
+								if (oo.index == obj_vine_l || oo.index == obj_vine_r) {
+									var w = 32, h = 32;
+									if (o.index == obj_mini_block) {
+										w = 16;
+										h = 16;
+									}
+									if (o.x == oo.x && o.y == oo.y) {
+										DerpXmlWrite_OpenTag("obj");
+				                            DerpXmlWrite_Attribute("type", ds_map_find_value(namemap, object_get_name(oo.index)));
+				                            DerpXmlWrite_Attribute("x", string(oo.x + 16));
+				                            DerpXmlWrite_Attribute("y", string(oo.y + 16));
+											if (oo.index == obj_vine_l)
+												DerpXmlWrite_Attribute("slot", "0");
+											else
+												DerpXmlWrite_Attribute("slot", "1");
+				                        DerpXmlWrite_CloseTag();
+									}
+								}	
+							}
+		                }
+		                if (o.index == obj_player_start || o.index == obj_save) {
+		                   DerpXmlWrite_LeafElement("param", "");
+		                        DerpXmlWrite_Attribute("key", "grav_type");
+		                        DerpXmlWrite_Attribute("val", "0"); 
+		                }
+		                if (o.index == obj_apple) {
+		                   DerpXmlWrite_LeafElement("param", "");
+		                        DerpXmlWrite_Attribute("key", "bounce");
+		                        DerpXmlWrite_Attribute("val", "0"); 
+		                   DerpXmlWrite_LeafElement("param", "");
+		                        DerpXmlWrite_Attribute("key", "cherry_color");
+		                        DerpXmlWrite_Attribute("val", "0"); 
+		                }
+		                if (o.index == obj_platform) {
+		                   DerpXmlWrite_LeafElement("param", "");
+		                        DerpXmlWrite_Attribute("key", "sideways");
+		                        DerpXmlWrite_Attribute("val", "0"); 
+		                }
+		            DerpXmlWrite_CloseTag();
+		        }
+		    DerpXmlWrite_CloseTag();
+		DerpXmlWrite_CloseTag();
+    
+		var xml_string = DerpXmlWrite_GetString();
+		DerpXmlWrite_UnloadString();
+
+		var f = file_text_open_write(path + mapname + ".map");
+		file_text_write_string(f, xml_string);
+		file_text_close(f);
+
+	}
 }
 
 function read_tree_children(file, _count, newfile) {

@@ -29,8 +29,11 @@ function object_in_palette(index) {
 	    case obj_trg:
 	    case obj_mini_killer_block:
 	        return true;
+			break;
+		default:
+			return false;
+			break;
 	}
-	return false;
 }
 
 function object_at_pos(_x, _y, _obj_index) {
