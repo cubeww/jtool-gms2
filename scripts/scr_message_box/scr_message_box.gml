@@ -1,41 +1,26 @@
-function MessageBox(_rx = 0, _ry = 0, _w = 320, _h = 130, _text = "") : Control(_rx, _ry, _w, _h) constructor {
-	// properties
-	text = _text;
+function MessageBox(_text = ""): Control(0, 0, 320, 130) constructor {
+    // properties
+    rel_x = room_width / 2 - w / 2;
+    rel_y = room_height / 2 - h / 2;
 
-	// fields
-	lbl = add_control(Label);
-	
-	btn_ok = add_child(new Button(0, 0, 130, 32, "OK", noone, destroy));
-	btn_close = add_child(new Button(0, 0, 40, 25, "X", noone, destroy));
-	
-	// methods
-	on_step = function() {
-		lbl.rx = w/2;
-		lbl.ry = 32;
-		lbl.valign = fa_top;
-		lbl.text = text;
-		
-		btn_ok.rx = w/2 - btn_ok.w/2;
-		btn_ok.ry = h - btn_ok.h - 8;
-		
-		btn_close.rx = w - btn_close.w;
-		btn_close.ry = 0;
-	}
-	
-	on_draw = function() {
-		// draw black screen
-		draw_set_alpha(alpha * 0.5);
-		draw_set_color(c_black);
-		draw_rectangle(-1, -1, room_width, room_height, 0);
-		
-		// draw background
-		draw_set_alpha(alpha);
-		draw_set_color(global.current_skin.button_idle_color);
-		draw_rectangle(x, y, x+w-1, y+h-1, 0);
-		
-		// draw border
-		draw_set_alpha(alpha);
-		draw_set_color(c_black);
-		draw_rectangle(x, y, x+w-1, y+h-1, 1);
-	}
+    // fields
+    panel = add_child(new Panel(0, 0, w, h));
+
+    lbl = panel.add_child(new Label(w / 2, 32, _text, fa_center, fa_top));
+
+    btn_ok = panel.add_child(new Button(0, 0, 130, 32, "OK", noone, destroy));
+    btn_ok.rel_x = w / 2 - btn_ok.w / 2;
+    btn_ok.rel_y = h - btn_ok.h - 8;
+
+    btn_close = panel.add_child(new Button(0, 0, 40, 25, "X", noone, destroy));
+    btn_close.rel_x = w - btn_close.w;
+    btn_close.rel_y = 0;
+
+    // methods
+    on_draw = function() {
+        // draw black screen
+        draw_set_alpha(alpha * 0.5);
+        draw_set_color(c_black);
+        draw_rectangle_wh(0, 0, room_width, room_height, 0);
+    }
 }

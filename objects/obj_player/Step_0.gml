@@ -1,12 +1,7 @@
 /// @description Classic kid physics  
 
 // dotkid
-if (global.dotkid && mask_index != spr_dotkid) {
-    mask_index = spr_dotkid;
-} else if (!global.dotkid && mask_index == spr_dotkid) {
-    mask_index = spr_player_mask;
-}
-
+dotkid_check();
 
 // set x / y previous
 xprev = x;

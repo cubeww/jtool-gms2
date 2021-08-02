@@ -18,15 +18,15 @@ menu = control.add_child(new Panel(0, menu_hide_y, 1056, menu_height));
 
 // menu methods
 show_menu = function() {
-	if (global.state == GLOBALSTATE_IDLE && menu.ry == menu_hide_y) {
+	if (global.state == GLOBALSTATE_IDLE && abs(menu.rel_y - menu_hide_y) <= 10) {
 		global.state = GLOBALSTATE_MENU;
-		TweenFire(menu, EaseOutQuad, TWEEN_MODE_ONCE, false, 0, room_speed / 3, "ry", menu.ry, 0);
+		TweenFire(menu, EaseOutExpo, TWEEN_MODE_ONCE, false, 0, room_speed / 2, "rel_y", menu.rel_y, 0);
 	}
 }
 
 close_menu = function() {
 	global.state = GLOBALSTATE_IDLE;
-	TweenFire(menu, EaseOutQuad, TWEEN_MODE_ONCE, false, 0, room_speed / 3, "ry", menu.ry, menu_hide_y);
+	TweenFire(menu, EaseOutExpo, TWEEN_MODE_ONCE, false, 0, room_speed, "rel_y", menu.rel_y, menu_hide_y);
 }
 
 // define menu panel ui
@@ -256,6 +256,10 @@ tab_help = menu.add_child(new ToggleButton(xo + dx * 5, yo, w, h,
 	function() { return menu_tab == MENUTAB_HELP; }));
 
 xx = -dx * 5;
+yy = yo2;
+btn_about = tab_help.add_child(new Button(xx, yy, w, h, "About", noone, function() {
+	obj_popup_window.control.add_child(new MessageBox("Jtool-GMS2 beta"));
+}));
 
 // close menu button
 xx = 1056 - w - 8;

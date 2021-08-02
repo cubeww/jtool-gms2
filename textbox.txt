@@ -1,0 +1,59 @@
+function TextBox(_rel_x = 0, _rel_y = 0, _w = 40, _h = 32) : Control(_rel_x, _rel_y, _w, _h) constructor {
+	// properties
+	active = true;
+	text = "";
+	border_color = c_black;
+	timer = 25;
+	show_cursor = true;
+	
+	// methods
+	on_step = function() {
+		if (timer-- == 0) {
+			show_cursor = !show_cursor;
+			timer = 25;
+		}
+		
+		if (point_in_rectangle(mouse_x, mouse_y, x, y, x + w - 1, y + h - 1)) {
+			if (mouse_check_button_pressed(mb_left)) {
+				active = true;
+			}
+		} else {
+			if (mouse_check_button_pressed(mb_left)) {
+				active = false;
+			}
+		}
+		
+		// get input
+		if (active) {
+		    var k = keyboard_key;
+			var c = chr(k);
+			show_debug_message(keyboard_check_direct(97))
+			if (keyboard_check_pressed(k) && string_pos(c, "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ") != 0) {
+				text += c;
+			}
+		}
+	}
+	
+	on_draw = function() {
+		// background color
+		draw_set_alpha(alpha);
+		draw_set_color(make_color_rgb(215, 215, 215));
+		draw_rectangle(x, y, x+w-1, y+h-1, 0);
+		
+		// input text
+		draw_set_color(c_black);
+		draw_set_halign(fa_left);
+		draw_set_valign(fa_middle);
+		draw_text(x+8, y+h/2, text);
+		
+		// cursor
+		if (active && show_cursor) {
+			var xx = x+8+string_length(text)*font_get_size(font_small);
+			draw_line(xx, y+8, xx, y+h-8);
+		}
+		
+		// border
+		draw_set_color(border_color);
+		draw_rectangle(x, y, x+w-1, y+h-1, 1);
+	}
+}

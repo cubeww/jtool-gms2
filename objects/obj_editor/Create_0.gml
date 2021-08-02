@@ -28,6 +28,8 @@ xsnapped = 0;
 ysnapped = 0;
 cursor_in_area = false;
 
+snap = 32;
+
 // undo & redo
 undo_list = [];
 undo_pos = 0;

@@ -70,6 +70,9 @@ function Map() constructor {
 			instance_create_layer(obj.x, obj.y, palette_object_get_layer(obj.index), obj.index);
 		}
 		global.current_save.load();
+        
+        with (obj_editor)
+            clear_undo();
 	}
 		
 	// rmj save / load

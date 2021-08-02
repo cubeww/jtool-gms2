@@ -8,8 +8,8 @@
   "spriteMaskId": null,
   "persistent": false,
   "parentObjectId": {
-    "name": "obj_jui_control",
-    "path": "objects/obj_jui_control/obj_jui_control.yy",
+    "name": "obj_ui_control",
+    "path": "objects/obj_ui_control/obj_ui_control.yy",
   },
   "physicsObject": false,
   "physicsSensor": false,
@@ -25,6 +25,7 @@
   "physicsShapePoints": [],
   "eventList": [
     {"isDnD":false,"eventNum":0,"eventType":0,"collisionObjectId":null,"resourceVersion":"1.0","name":"","tags":[],"resourceType":"GMEvent",},
+    {"isDnD":false,"eventNum":0,"eventType":3,"collisionObjectId":null,"resourceVersion":"1.0","name":"","tags":[],"resourceType":"GMEvent",},
   ],
   "properties": [],
   "overriddenProperties": [],

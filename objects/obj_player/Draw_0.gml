@@ -26,8 +26,8 @@ if (global.dotkid) {
 			break;
 		case 2:
 			draw_sprite_ext(mask_index, image_index, x, y, 
-						global.player_xscale, global.player_grav, 
-						image_angle, image_blend, image_alpha);
+					global.player_xscale, global.player_grav, 
+					image_angle, image_blend, image_alpha);
 			break;
 	} 
 }

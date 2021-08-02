@@ -16,8 +16,6 @@ code_held = keyboard_check(vk_alt);
 
 cursor_in_area = point_in_rectangle(mouse_x, mouse_y, xmin, ymin, xmax, ymax);
 
-snap = 32;
-
 // undo events
 function add_create_event(_x, _y, _obj_index) {
 	if (cur_event == noone) {
@@ -66,6 +64,11 @@ function finish_move_object() {
 		caught_object = noone;
 		finish_event();
 	}
+}
+
+function clear_undo() {
+    array_clear(undo_list);
+    undo_pos = 0;
 }
 
 if (global.state == GLOBALSTATE_IDLE) {

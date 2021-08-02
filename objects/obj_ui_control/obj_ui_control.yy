@@ -29,7 +29,7 @@
     "path": "folders/Objects/ui.yy",
   },
   "resourceVersion": "1.0",
-  "name": "obj_jui_control",
+  "name": "obj_ui_control",
   "tags": [],
   "resourceType": "GMObject",
 }

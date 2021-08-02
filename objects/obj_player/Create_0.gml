@@ -18,3 +18,14 @@ if (global.player_grav == 1) {
 } else {
     mask_index = spr_player_mask_flip;
 }
+
+// dotkid
+dotkid_check = function() {
+    if (global.dotkid && mask_index != spr_dotkid) {
+        mask_index = spr_dotkid;
+    } else if (!global.dotkid && mask_index == spr_dotkid) {
+        mask_index = spr_player_mask;
+    }
+}
+
+dotkid_check();

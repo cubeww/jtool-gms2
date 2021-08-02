@@ -47,3 +47,14 @@ function draw_text_outline(textX, textY, textStr, textColor, outlineColor) {
 	draw_set_color(textColor);
 	draw_text(textX,textY,textStr);
 }
+
+function draw_rectangle_wh(xx, yy, ww, hh, outline) {
+    xx = round(xx);
+    yy = round(yy);
+    
+    if (!outline) {
+        draw_rectangle(xx, yy, xx + ww - 1, yy + hh - 1, false);
+    } else {
+        draw_rectangle(xx + 1, yy + 1, xx + ww - 2, yy + hh - 2, true);
+    }
+}

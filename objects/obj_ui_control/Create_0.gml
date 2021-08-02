@@ -1,3 +1,3 @@
 /// @description Define controls
 
-control = new Control();
+control = new Control(x, y);
